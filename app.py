@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from hash import hash_password, check_password
-from flask_login import login_user, UserMixin, LoginManager, logout_user
+from flask_login import login_user, UserMixin, LoginManager, logout_user, login_required
 
 app = Flask(__name__)
 
@@ -18,7 +18,7 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.query.get(user_id)
 
 
 class User(db.Model, UserMixin):
@@ -81,7 +81,7 @@ def hello_world():  # put application's code here
 
 
 #username, password, name, surname, email
-@app.route('/api/register', methods=["POST"])
+@app.route('/api/register', methods=["GET","POST"])
 def register():
     if request.method == "POST":
         data = request.json
@@ -131,6 +131,7 @@ def login():
 
 
 @app.route('/api/logout', methods=["POST"])
+@login_required
 def logout():
     if request.method == "POST":
         logout_user()
@@ -142,6 +143,7 @@ def logout():
             response="You cannot use GET method to logout!"
         )
 
+
 if __name__ == '__main__':
     app.run()
 
@@ -150,12 +152,14 @@ if __name__ == '__main__':
 # POST /api/login
 # POST /api/register
 
-
-# GET  /api/user/settings
-# POST /api/user/settings/set
 # POST /api/chats/create
 # GET  /api/chats/
 # GET  /api/chats/{id}/
 # POST /api/chats/{id}/message/send
 # POST /api/chats/{id}/message/delete
 # POST /api/chats/{id}/message/edit
+
+
+
+# GET  /api/user/settings
+# POST /api/user/settings/set
