@@ -1,5 +1,5 @@
 import flask_login
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from hash import hash_password, check_password
@@ -150,8 +150,11 @@ def login():
                 response="User successfully logged!"
             )
         else:
-            return jsonify(
-                response="Username or password does not match!"
+            return make_response(
+                jsonify(
+                    response="Username or password does not match!"
+                ),
+                401
             )
     else:
         return jsonify(
