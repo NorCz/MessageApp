@@ -42,7 +42,7 @@ class ChatMember(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     groupchat_id = db.Column(db.Integer, ForeignKey('groupchat.id'), unique=False, nullable=False)
     user_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
-    nickname = db.Column(db.String, unique=False, nullable=False)
+    nickname = db.Column(db.String, unique=False, nullable=True)
     isAdmin = db.Column(db.Boolean, unique=False, nullable=False)
     isRemoved = db.Column(db.Boolean, unique=False, nullable=False)
 
@@ -184,6 +184,43 @@ def get_chats():
         chats=chats
     )
 
+@app.route('/api/chats/create', methods=["POST"])
+@login_required
+def create_chat():
+    chat_name = 'Nowa grupa'
+
+    if request.data:
+        data = request.json
+        if 'name' in data:
+            chat_name = data["name"]
+
+    chat = GroupChat(
+        name=chat_name
+    )
+
+    db.session.add(chat)
+    db.session.flush()
+    db.session.refresh(chat)
+
+    member = ChatMember(
+        user_id=flask_login.current_user.id,
+        groupchat_id=chat.id,
+        isAdmin=False,
+        isRemoved=False,
+        nickname=None
+    )
+
+    db.session.add(member)
+    db.session.commit()
+
+    return jsonify(
+        {
+            "chat": {
+                "id": chat.id,
+                "name": chat.name
+            }
+        }
+    )
 
 
 if __name__ == '__main__':
