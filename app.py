@@ -205,7 +205,7 @@ def create_chat():
     member = ChatMember(
         user_id=flask_login.current_user.id,
         groupchat_id=chat.id,
-        isAdmin=False,
+        isAdmin=True,
         isRemoved=False,
         nickname=None
     )
