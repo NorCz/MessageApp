@@ -52,6 +52,7 @@ class GroupMessage(db.Model):
     content = db.Column(db.String, unique=False, nullable=False)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False)
+    attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
 
 
 class PrivateChat(db.Model):
@@ -67,6 +68,7 @@ class PrivateMessage(db.Model):
     content = db.Column(db.String, unique=False, nullable=False)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False)
+    attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
 
 
 with app.app_context():
@@ -148,9 +150,9 @@ if __name__ == '__main__':
     app.run()
 
 
-# GET /api/
-# POST /api/login
-# POST /api/register
+# zrobione GET /api/
+# zrobione POST /api/login
+# zrobione POST /api/register
 
 # POST /api/chats/create
 # GET  /api/chats/
