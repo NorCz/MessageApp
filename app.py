@@ -24,7 +24,7 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, unique=False, nullable=False)
     salt = db.Column(db.String, unique=False, nullable=False)
     name = db.Column(db.String, unique=False, nullable=False)
     surname = db.Column(db.String, unique=False, nullable=False)
@@ -33,8 +33,8 @@ class User(db.Model, UserMixin):
 
 class ChatMember(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    groupchat_id = db.Column(db.Integer, unique=True, nullable=False)
-    user_id = db.Column(db.Integer, unique=True, nullable=False)
+    groupchat_id = db.Column(db.Integer, unique=False, nullable=False)
+    user_id = db.Column(db.Integer, unique=False, nullable=False)
     nickname = db.Column(db.String, unique=False, nullable=False)
     isAdmin = db.Column(db.Boolean, unique=False, nullable=False)
     isRemoved = db.Column(db.Boolean, unique=False, nullable=False)
@@ -42,13 +42,13 @@ class ChatMember(db.Model):
 
 class GroupChat(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, unique=False, nullable=False)
 
 
 class GroupMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    member_id = db.Column(db.Integer, unique=True, nullable=False)
-    groupchat_id = db.Column(db.Integer, unique=True, nullable=False)
+    member_id = db.Column(db.Integer, unique=False, nullable=False)
+    groupchat_id = db.Column(db.Integer, unique=False, nullable=False)
     content = db.Column(db.String, unique=False, nullable=False)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False)
@@ -56,12 +56,14 @@ class GroupMessage(db.Model):
 
 class PrivateChat(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    from_id = db.Column(db.Integer, unique=False, nullable=False)
+    to_id = db.Column(db.Integer, unique=False, nullable=False)
 
 
 class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    member_id = db.Column(db.Integer, unique=True, nullable=False)
-    chat_id = db.Column(db.Integer, unique=True, nullable=False)
+    user_id = db.Column(db.Integer, unique=False, nullable=False)
+    privatechat_id = db.Column(db.Integer, unique=False, nullable=False)
     content = db.Column(db.String, unique=False, nullable=False)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False)
