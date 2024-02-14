@@ -40,7 +40,12 @@ class ChatMember(db.Model):
     isRemoved = db.Column(db.Boolean, unique=False, nullable=False)
 
 
-class Message(db.Model):
+class GroupChat(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    name = db.Column(db.String, unique=True, nullable=False)
+
+
+class GroupMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     member_id = db.Column(db.Integer, unique=True, nullable=False)
     groupchat_id = db.Column(db.Integer, unique=True, nullable=False)
@@ -49,9 +54,17 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, unique=False, nullable=False)
 
 
-class Groupchat(db.Model):
+class PrivateChat(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
+
+
+class PrivateMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    member_id = db.Column(db.Integer, unique=True, nullable=False)
+    chat_id = db.Column(db.Integer, unique=True, nullable=False)
+    content = db.Column(db.String, unique=False, nullable=False)
+    isDeleted = db.Column(db.Boolean, unique=False, nullable=False)
+    timestamp = db.Column(db.DateTime, unique=False, nullable=False)
 
 
 with app.app_context():
