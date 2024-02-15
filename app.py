@@ -112,10 +112,42 @@ def userlist():
     return json.dumps(json_of_users)
 
 
+@app.route('/api/user/<user_id>/send', methods=["GET", "POST"])
+@login_required
+def send_message(user_id):
+    if User.query.get_or_404(user_id):
+        params = request.json
+        with app.app_context():
+            message = PrivateMessage(
+                from_id=u_id,
+                to_id=user_id,
+                content=params.get("content"),
+                attachment=params.get("attachment")
+            )
+            db.session.add(message)
+            db.session.commit()
+        return jsonify(
+            response="Message sent properly!"
+        )
+    else:
+        return jsonify(
+            response="User not found in the database"
+        )
+
+
 @app.route('/api/user/<user_id>')
 @login_required
 def private_messages(user_id):
-    return user_id
+    if User.query.get_or_404(user_id):
+        messages = PrivateMessage.query.filter(from_id=user_id, to_id=u_id)
+        print(messages)
+        return jsonify(
+            response="Request successful!"
+        )
+    else:
+        return jsonify(
+            response="User not found in the database!"
+        )
 
 
 #Chaty
@@ -178,8 +210,8 @@ if __name__ == '__main__':
 # zrobione GET /api/
 # zrobione POST /api/login
 # zrobione POST /api/register
+# GET /api/userlist/
 
-# POST /api/userlist/
 # POST /api/user/{id} <- zwraca wiadomosci z danym użytkownikiem
 # POST /api/user/{id}/send
 # POST /api/chats/create

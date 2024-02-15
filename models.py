@@ -38,17 +38,6 @@ class GroupChat(db.Model):
     name = db.Column(db.String, unique=False, nullable=False)
 
 
-class PrivateChat(db.Model):
-    __tablename__ = 'privatechat'
-
-    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    from_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
-    to_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
-
-    from_user = db.relationship("User", foreign_keys=[from_id])
-    to_user = db.relationship("User", foreign_keys=[to_id])
-
-
 class GroupMessage(db.Model):
     __tablename__ = 'groupmessage'
 
@@ -68,12 +57,10 @@ class PrivateMessage(db.Model):
     __tablename__ = 'privatemessage'
 
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    user_id = db.Column(db.Integer, ForeignKey("user.id"), unique=False, nullable=False)
-    privatechat_id = db.Column(db.Integer, ForeignKey('privatechat.id'), unique=False, nullable=False)
-    content = db.Column(db.String, unique=False, nullable=False)
+    from_id = db.Column(db.Integer, unique=False, nullable=False)
+    to_id = db.Column(db.Integer, unique=False, nullable=False)
+    content = db.Column(db.String, unique=False, nullable=True)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False, default=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
     attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
 
-    user = db.relationship("User")
-    privateChat = db.relationship("PrivateChat")
