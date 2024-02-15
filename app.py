@@ -5,9 +5,7 @@ from hash import hash_password, check_password
 from flask_login import login_user, LoginManager, logout_user, login_required
 from db import db
 from models import *
-
-
-
+import json
 
 app = Flask(__name__)
 
@@ -22,7 +20,10 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
+    global u_id
+    u_id = user_id
     return db.session.get(User, user_id)
+
 
 with app.app_context():
     db.create_all()
@@ -35,13 +36,13 @@ def hello_world():  # TODO: List api routes!
     )
 
 
-#username, password, name, surname, email
-@app.route('/api/register', methods=["GET","POST"])
+# username, password, name, surname, email
+@app.route('/api/register', methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         data = request.json
         cipher_data = hash_password(data["password"])
-        #trzeba dodać sprawdzanie czy użytkownik istnieje i dodać try catche
+        # trzeba dodać sprawdzanie czy użytkownik istnieje i dodać try catche
         with app.app_context():
             user = User(
                 username=data["username"],
@@ -62,10 +63,10 @@ def register():
         )
 
 
-#username, password
+# username, password
 @app.route('/api/login', methods=["POST"])
 def login():
-    #Trzeba dodać sprawdzenie czy użytkownik jest zalogowany
+    # Trzeba dodać sprawdzenie czy użytkownik jest zalogowany
     if request.method == "POST":
         data = request.json
         user = User.query.filter_by(username=data["username"]).first()
@@ -101,16 +102,35 @@ def logout():
         )
 
 
+#Userzy
+@app.route('/api/userlist')
+def userlist():
+    list_of_users = User.query.all()
+    json_of_users = {}
+    for i in range(len(list_of_users)):
+        json_of_users.update({f"User{i}": {"username": list_of_users[i].username, "name": list_of_users[i].name, "surname": list_of_users[i].surname, "email": list_of_users[i].email}})
+    return json.dumps(json_of_users)
+
+
+@app.route('/api/user/<user_id>')
+@login_required
+def private_messages(user_id):
+    return user_id
+
+
+#Chaty
 @app.route('/api/chats', methods=["GET"])
 @login_required
 def get_chats():
-    result = db.session.query(GroupChat.id, GroupChat.name).select_from(GroupChat).join(ChatMember).filter(ChatMember.user_id == flask_login.current_user.id).all()
+    result = db.session.query(GroupChat.id, GroupChat.name).select_from(GroupChat).join(ChatMember).filter(
+        ChatMember.user_id == flask_login.current_user.id).all()
     chats = []
     for row in result:
         chats.append((row.id, row.name))
     return jsonify(
         chats=chats
     )
+
 
 @app.route('/api/chats/create', methods=["POST"])
 @login_required
@@ -155,7 +175,6 @@ def create_chat():
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
 
-
 # zrobione GET /api/
 # zrobione POST /api/login
 # zrobione POST /api/register
@@ -168,7 +187,6 @@ if __name__ == '__main__':
 # GET  /api/chats/ <- wyswietla czaty użytkownika
 # GET  /api/chats/{id}/ <- wyswietla wiadomosci na czacie
 # POST /api/chats/{id}/message/send
-
 
 
 # GET  /api/user/settings
