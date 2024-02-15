@@ -135,15 +135,15 @@ def send_message(user_id):
         )
 
 
-@app.route('/api/user/<user_id>')
+@app.route('/api/user/<user_id>', methods=["GET"])
 @login_required
 def private_messages(user_id):
     if User.query.get_or_404(user_id):
-        messages = PrivateMessage.query.filter(from_id=user_id, to_id=u_id)
-        print(messages)
-        return jsonify(
-            response="Request successful!"
-        )
+        messages = PrivateMessage.query.filter(PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id)))
+        list_of_messages_between_users = []
+        for i in messages:
+            list_of_messages_between_users.append({"from": i.from_id, "to": i.to_id, "content": i.content, "isDeleted": i.isDeleted, "timestamp": i.timestamp, "attachment": i.attachment})
+        return json.dumps(list_of_messages_between_users, default=str)
     else:
         return jsonify(
             response="User not found in the database!"
@@ -211,9 +211,10 @@ if __name__ == '__main__':
 # zrobione POST /api/login
 # zrobione POST /api/register
 # GET /api/userlist/
-
 # POST /api/user/{id} <- zwraca wiadomosci z danym użytkownikiem
 # POST /api/user/{id}/send
+
+
 # POST /api/chats/create
 # POST /api/chats/{id}/add_user
 # GET  /api/chats/ <- wyswietla czaty użytkownika
