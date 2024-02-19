@@ -107,7 +107,7 @@ def userlist():
     list_of_users = User.query.all()
     json_of_users = {}
     for i in range(len(list_of_users)):
-        json_of_users.update({f"User{i}": {"username": list_of_users[i].username, "name": list_of_users[i].name, "surname": list_of_users[i].surname, "email": list_of_users[i].email}})
+        json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username, "name": list_of_users[i].name, "surname": list_of_users[i].surname, "email": list_of_users[i].email}})
     return json.dumps(json_of_users)
 
 
@@ -191,7 +191,19 @@ def get_chats():
         ChatMember.user_id == flask_login.current_user.id).all()
     chats = []
     for row in result:
-        chats.append((row.id, row.name))
+        members = db.session.query(ChatMember.id, ChatMember.user_id, ChatMember.nickname, ChatMember.isAdmin).filter_by(groupchat_id=row.id).all()
+        chats.append(
+            {
+                "id": row.id,
+                "name": row.name,
+                "members": [{
+                    "id": member.id,
+                    "user_id": member.user_id,
+                    "nickname": member.nickname,
+                    "isAdmin": member.isAdmin
+                } for member in members]
+            }
+        )
     return jsonify(
         chats=chats
     )
@@ -218,9 +230,7 @@ def create_chat():
     member = ChatMember(
         user_id=flask_login.current_user.id,
         groupchat_id=chat.id,
-        isAdmin=True,
-        isRemoved=False,
-        nickname=None
+        isAdmin=True
     )
 
     db.session.add(member)
@@ -237,22 +247,91 @@ def create_chat():
     )
 
 
+@app.route('/api/chats/<chat_id>/add_user', methods=["POST"])
+@login_required
+def add_user_to_chat(chat_id):
+    groupchat = db.session.query(GroupChat).filter_by(id=chat_id).first()
+    if groupchat is None:
+        return make_response(
+            jsonify(
+                response=f"Groupchat with id {chat_id} not found"
+            ),
+            404
+        )
+    cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
+    if cur_member is None or not cur_member.isAdmin:
+        return make_response(
+            jsonify(
+                response=f"Logged in user (id {flask_login.current_user.id}) is not a member of groupchat with id {chat_id} or not a groupchat admin"
+            ),
+            401
+        )
+    if request.data:
+        data = request.json
+        if 'user_id' in data:
+            user_id = data["user_id"]
+            user = db.session.query(User).filter_by(id=user_id).first()
+            if user is None:
+                return make_response(
+                    jsonify(
+                        response=f"User with id {user_id} does not exist"
+                    ),
+                    404
+                )
+            if db.session.query(ChatMember).filter_by(user_id=user_id).join(GroupChat).filter_by(id=chat_id).first() is not None:
+                return make_response(
+                    jsonify(
+                        response=f"User with id {user_id} is already a member of groupchat with id {chat_id}."
+                    ),
+                    409
+                )
+            nickname = None
+            if 'nickname' in data:
+                nickname = data["nickname"]
+            member = ChatMember(
+                groupchat_id=chat_id,
+                user_id=user_id,
+                isAdmin=False,
+                nickname=nickname
+            )
+
+            db.session.add(member)
+            db.session.commit()
+
+            return jsonify(
+                response='Successfully added user to chat',
+            )
+        else:
+            return make_response(
+                jsonify(
+                    response="User's id was not provided in request body"
+                ),
+                400
+            )
+    else:
+        return make_response(
+            jsonify(
+                response="Request had an empty body"
+            ),
+            400
+        )
+
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
 
-# zrobione GET /api/
+# zrobione GET  /api/
 # zrobione POST /api/login
 # zrobione POST /api/register
-# zrobione GET /api/userlist/
+# zrobione GET  /api/userlist/
 # zrobione POST /api/user/{id} <- zwraca wiadomosci pomiędzy danymi użytkownikiem
 # zrobione POST /api/user/{id}/send
 
 
 # DELETE /api/message/{id}
 
-# POST /api/chats/create
-# POST /api/chats/{id}/add_user
-# GET  /api/chats/ <- wyswietla czaty użytkownika
+# zrobione POST /api/chats/create
+# zrobione POST /api/chats/{id}/add_user
+# zrobione GET  /api/chats/ <- wyswietla czaty użytkownika
 # GET  /api/chats/{id}/ <- wyswietla wiadomosci na czacie
 # POST /api/chats/{id}/message/send
 
