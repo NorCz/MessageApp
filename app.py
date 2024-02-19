@@ -3,11 +3,13 @@ from flask import Flask, request, make_response
 from flask import jsonify
 from hash import hash_password, check_password, hash_password_with_salt_already_generated
 from flask_login import login_user, LoginManager, logout_user, login_required, current_user
+from flask_cors import CORS
 from db import db
 from models import *
 import json
 
 app = Flask(__name__)
+CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.secret_key = "zse4%RDX"
