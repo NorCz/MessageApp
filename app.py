@@ -1,5 +1,5 @@
 import flask_login
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, session
 from flask import jsonify
 from hash import hash_password, check_password, hash_password_with_salt_already_generated
 from flask_login import login_user, LoginManager, logout_user, login_required, current_user
@@ -39,8 +39,15 @@ def hello_world():  # TODO: List api routes!
 # username, password, name, surname, email
 @app.route('/api/register', methods=["POST"])
 def register():
-    if request.method == "POST":
+    if request.data:
         data = request.json
+        if "username" not in data or "name" not in data or "surname" not in data or "email" not in data:
+            return make_response(
+                jsonify(
+                    response="Request body missing at least one of: username, name, surname, email"
+                ),
+                400
+            )
         cipher_data = hash_password(data["password"])
         with app.app_context():
             user = User(
@@ -57,22 +64,39 @@ def register():
             response="User succesfully added to database!"
         )
     else:
-        return jsonify(
-            response="You cannot use GET to register!"
+        return make_response(
+            jsonify(
+                response="Request had an empty body"
+            ),
+            400
         )
 
 
 # username, password
 @app.route('/api/login', methods=["POST"])
 def login():
-    # Trzeba dodać sprawdzenie czy użytkownik jest zalogowany
-    if request.method == "POST":
+    if current_user.is_authenticated:
+        return make_response(
+            jsonify(
+                response=f"Already logged in as user with id {current_user.id}"
+            ),
+            409
+        )
+    if request.data:
         data = request.json
-        user = User.query.filter_by(username=data["username"]).first()
+        if "username" not in data or "password" not in data:
+            return make_response(
+                jsonify(
+                    response="Request body missing username or password"
+                ),
+                400
+            )
+        user = User.query.filter_by(username=data["username"]).first_or_404()
         if check_password(data["password"], user.salt, user.password):
             login_user(user)
+            session['user_id'] = current_user.id
             return jsonify(
-                response="User successfully logged!"
+                response="User successfully logged in!"
             )
         else:
             return make_response(
@@ -82,23 +106,21 @@ def login():
                 401
             )
     else:
-        return jsonify(
-            response="You cannot use GET method to log!"
+        return make_response(
+            jsonify(
+                response="Request had an empty body"
+            ),
+            400
         )
 
 
 @app.route('/api/logout', methods=["POST"])
 @login_required
 def logout():
-    if request.method == "POST":
-        logout_user()
-        return jsonify(
-            response="User successfully logged out!"
-        )
-    else:
-        return jsonify(
-            response="You cannot use GET method to logout!"
-        )
+    logout_user()
+    return jsonify(
+        response="User successfully logged out!"
+    )
 
 
 #Userzy
@@ -148,10 +170,6 @@ def send_message(user_id):
         return jsonify(
             response="Message sent properly!"
         )
-    else:
-        return jsonify(
-            response="User not found in the database"
-        )
 
 
 @app.route('/api/user/<user_id>', methods=["GET"])
@@ -173,7 +191,7 @@ def private_messages(user_id):
 @app.route('/api/delete/<message_id>', methods=["DELETE"])
 @login_required
 def delete_message(message_id):
-    message = PrivateMessage.query.filter_by(id=message_id).first()
+    message = PrivateMessage.query.filter_by(id=message_id).first_or_404()
     if message.from_id == current_user.get_id():
         message.isDeleted = True
         db.session.commit()
@@ -197,8 +215,11 @@ def change_password():
             response="Password changed"
         )
     else:
-        return jsonify(
-            response="No password in request body!"
+        return make_response(
+            jsonify(
+                response="No password in request body!"
+            ),
+            400
         )
 
 
@@ -233,7 +254,7 @@ def manage():
 @login_required
 def get_chats():
     result = db.session.query(GroupChat.id, GroupChat.name).select_from(GroupChat).join(ChatMember).filter(
-        ChatMember.user_id == flask_login.current_user.id).all()
+        ChatMember.user_id == current_user.id).all()
     chats = []
     for row in result:
         members = db.session.query(ChatMember.id, ChatMember.user_id, ChatMember.nickname, ChatMember.isAdmin).filter_by(groupchat_id=row.id).all()
@@ -254,7 +275,7 @@ def get_chats():
     )
 
 
-@app.route('/api/chats/create', methods=["POST"])
+@app.route('/api/chats/create', methods=["PUT"])
 @login_required
 def create_chat():
     chat_name = 'Nowa grupa'
@@ -273,7 +294,7 @@ def create_chat():
     db.session.refresh(chat)
 
     member = ChatMember(
-        user_id=flask_login.current_user.id,
+        user_id=current_user.id,
         groupchat_id=chat.id,
         isAdmin=True
     )
