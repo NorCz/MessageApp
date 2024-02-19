@@ -24,6 +24,15 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.session.get(User, user_id)
 
+@login_manager.unauthorized_callback
+def unauthorised_res():
+    return make_response(
+        jsonify(
+            response="Unauthorized"
+        ),
+        401
+    )
+
 
 with app.app_context():
     db.create_all()
@@ -91,10 +100,16 @@ def login():
                 ),
                 400
             )
-        user = User.query.filter_by(username=data["username"]).first_or_404()
+        user = User.query.filter_by(username=data["username"]).first()
+        if user is None:
+            return make_response(
+                jsonify(
+                    response=f"User with username {data['username']} not found"
+                ),
+                404
+            )
         if check_password(data["password"], user.salt, user.password):
             login_user(user)
-            session['user_id'] = current_user.id
             return jsonify(
                 response="User successfully logged in!"
             )
@@ -122,6 +137,16 @@ def logout():
         response="User successfully logged out!"
     )
 
+@app.route('/api/user', methods=["GET"])
+@login_required
+def get_current_user():
+    return jsonify(
+        id=current_user.id,
+        username=current_user.username,
+        name=current_user.name,
+        surname=current_user.surname,
+        email=current_user.email
+    )
 
 #Userzy
 @app.route('/api/userlist')
@@ -156,7 +181,7 @@ def started_converstations():
 @app.route('/api/user/<user_id>/send', methods=["GET", "POST"])
 @login_required
 def send_message(user_id):
-    if User.query.get_or_404(user_id):
+    if User.query.get(user_id):
         params = request.json
         with app.app_context():
             message = PrivateMessage(
@@ -170,12 +195,19 @@ def send_message(user_id):
         return jsonify(
             response="Message sent properly!"
         )
+    else:
+        return make_response(
+            jsonify(
+                response=f"User with id {user_id} not found"
+            ),
+            404
+        )
 
 
 @app.route('/api/user/<user_id>', methods=["GET"])
 @login_required
 def private_messages(user_id):
-    if User.query.get_or_404(user_id):
+    if User.query.get(user_id):
         u_id = current_user.get_id()
         messages = PrivateMessage.query.filter(PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id)))
         list_of_messages_between_users = []
@@ -191,7 +223,14 @@ def private_messages(user_id):
 @app.route('/api/delete/<message_id>', methods=["DELETE"])
 @login_required
 def delete_message(message_id):
-    message = PrivateMessage.query.filter_by(id=message_id).first_or_404()
+    message = PrivateMessage.query.filter_by(id=message_id).first()
+    if message is None:
+        return make_response(
+            jsonify(
+                response=f"Message with id {message_id} not found"
+            ),
+            404
+        )
     if message.from_id == current_user.get_id():
         message.isDeleted = True
         db.session.commit()
@@ -199,8 +238,11 @@ def delete_message(message_id):
             response="Message successfully deleted!"
         )
     else:
-        return jsonify(
-            response="You are not allowed to delete this message!"
+        return make_response(
+            jsonify(
+                response="You are not allowed to delete this message!"
+            ),
+            403
         )
 
 
@@ -285,22 +327,23 @@ def create_chat():
         if 'name' in data:
             chat_name = data["name"]
 
-    chat = GroupChat(
-        name=chat_name
-    )
+    with app.app_context():
+        chat = GroupChat(
+            name=chat_name
+        )
 
-    db.session.add(chat)
-    db.session.flush()
-    db.session.refresh(chat)
+        db.session.add(chat)
+        db.session.flush()
+        db.session.refresh(chat)
 
-    member = ChatMember(
-        user_id=current_user.id,
-        groupchat_id=chat.id,
-        isAdmin=True
-    )
+        member = ChatMember(
+            user_id=current_user.id,
+            groupchat_id=chat.id,
+            isAdmin=True
+        )
 
-    db.session.add(member)
-    db.session.commit()
+        db.session.add(member)
+        db.session.commit()
 
     return jsonify(
         {
@@ -354,15 +397,17 @@ def add_user_to_chat(chat_id):
             nickname = None
             if 'nickname' in data:
                 nickname = data["nickname"]
-            member = ChatMember(
-                groupchat_id=chat_id,
-                user_id=user_id,
-                isAdmin=False,
-                nickname=nickname
-            )
 
-            db.session.add(member)
-            db.session.commit()
+            with app.app_context():
+                member = ChatMember(
+                    groupchat_id=chat_id,
+                    user_id=user_id,
+                    isAdmin=False,
+                    nickname=nickname
+                )
+
+                db.session.add(member)
+                db.session.commit()
 
             return jsonify(
                 response='Successfully added user to chat',
@@ -381,6 +426,31 @@ def add_user_to_chat(chat_id):
             ),
             400
         )
+
+@app.route('/api/chats/{chat_id}/message/send', methods=["GET", "POST"])
+@login_required
+def send_message(chat_id):
+    if GroupChat.query.get(chat_id):
+        params = request.json
+        with app.app_context():
+            # message = PrivateMessage(
+            #     content=params.get("content"),
+            #     attachment=params.get("attachment")
+            # )
+            db.session.add(message)
+            db.session.commit()
+        return jsonify(
+            response="Message sent properly!"
+        )
+    else:
+        return make_response(
+            jsonify(
+                response=f"Groupchat with id {chat_id} not found"
+            ),
+            404
+        )
+
+
 
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
