@@ -1,8 +1,8 @@
 import flask_login
 from flask import Flask, request, make_response
 from flask import jsonify
-from hash import hash_password, check_password
-from flask_login import login_user, LoginManager, logout_user, login_required
+from hash import hash_password, check_password, hash_password_with_salt_already_generated
+from flask_login import login_user, LoginManager, logout_user, login_required, current_user
 from db import db
 from models import *
 import json
@@ -20,8 +20,6 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    global u_id
-    u_id = user_id
     return db.session.get(User, user_id)
 
 
@@ -114,6 +112,7 @@ def userlist():
 @app.route('/api/started_conversations', methods=["GET"])
 @login_required
 def started_converstations():
+    u_id = current_user.get_id()
     from_messages = PrivateMessage.query.filter((PrivateMessage.from_id == u_id) | (PrivateMessage.to_id == u_id)).distinct()
     list_of_messages = []
     for i in from_messages:
@@ -137,7 +136,7 @@ def send_message(user_id):
         params = request.json
         with app.app_context():
             message = PrivateMessage(
-                from_id=u_id,
+                from_id=current_user.get_id(),
                 to_id=user_id,
                 content=params.get("content"),
                 attachment=params.get("attachment")
@@ -157,6 +156,7 @@ def send_message(user_id):
 @login_required
 def private_messages(user_id):
     if User.query.get_or_404(user_id):
+        u_id = current_user.get_id()
         messages = PrivateMessage.query.filter(PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id)))
         list_of_messages_between_users = []
         for i in messages:
@@ -172,8 +172,9 @@ def private_messages(user_id):
 @login_required
 def delete_message(message_id):
     message = PrivateMessage.query.filter_by(id=message_id).first()
-    if message.from_id == u_id:
+    if message.from_id == current_user.get_id():
         message.isDeleted = True
+        db.session.commit()
         return jsonify(
             response="Message successfully deleted!"
         )
@@ -181,6 +182,48 @@ def delete_message(message_id):
         return jsonify(
             response="You are not allowed to delete this message!"
         )
+
+
+@app.route('/api/change_password', methods=["PUT"])
+def change_password():
+    u_id = current_user.get_id()
+    data = request.json
+    user = User.query.filter_by(id=u_id).first()
+    if "password" in data:
+        user.password = hash_password_with_salt_already_generated(data["password"], user.salt)
+        return jsonify(
+            response="Password changed"
+        )
+    else:
+        return jsonify(
+            response="No password in request body!"
+        )
+
+
+@app.route('/api/manage/', methods=["PUT"])
+@login_required
+def manage():
+    u_id = current_user.get_id()
+    data = request.json
+    user = User.query.filter_by(id=u_id).first()
+    response = ""
+    if "name" in data:
+        user.name = data["name"]
+        response += f"Successfully changed name to {user.name}. "
+    if "surname" in data:
+        user.surname = data["surname"]
+        response += f"Successfully changed surname to {user.surname}. "
+    if "email" in data:
+        existing_user = User.query.filter_by(email=data["email"]).first()
+        if existing_user:
+            response += "Email has been already taken."
+        else:
+            user.email = data["email"]
+            response += f"Successfully changed email to {user.email}. "
+    db.session.commit()
+    return jsonify(
+        response=response
+    )
 
 
 #Chaty
