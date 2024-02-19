@@ -37,12 +37,11 @@ def hello_world():  # TODO: List api routes!
 
 
 # username, password, name, surname, email
-@app.route('/api/register', methods=["GET", "POST"])
+@app.route('/api/register', methods=["POST"])
 def register():
     if request.method == "POST":
         data = request.json
         cipher_data = hash_password(data["password"])
-        # trzeba dodać sprawdzanie czy użytkownik istnieje i dodać try catche
         with app.app_context():
             user = User(
                 username=data["username"],
@@ -110,6 +109,25 @@ def userlist():
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"username": list_of_users[i].username, "name": list_of_users[i].name, "surname": list_of_users[i].surname, "email": list_of_users[i].email}})
     return json.dumps(json_of_users)
+
+
+@app.route('/api/started_conversations', methods=["GET"])
+@login_required
+def started_converstations():
+    from_messages = PrivateMessage.query.filter((PrivateMessage.from_id == u_id) | (PrivateMessage.to_id == u_id)).distinct()
+    list_of_messages = []
+    for i in from_messages:
+        list_of_messages.append(i)
+    list_of_messages.reverse()
+    list_of_distinct_users = []
+    for i in list_of_messages:
+        if i.from_id != int(u_id) and i.from_id not in list_of_distinct_users:
+            list_of_distinct_users.append(i.from_id)
+        elif i.to_id != int(u_id) and i.to_id not in list_of_distinct_users:
+            list_of_distinct_users.append(i.to_id)
+    return jsonify(
+        recentChats=list_of_distinct_users
+    )
 
 
 @app.route('/api/user/<user_id>/send', methods=["GET", "POST"])
