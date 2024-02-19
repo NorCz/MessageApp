@@ -1,3 +1,5 @@
+import json
+
 import flask_login
 from flask import Flask, request, make_response, session
 from flask import jsonify
@@ -6,7 +8,6 @@ from flask_login import login_user, LoginManager, logout_user, login_required, c
 from flask_cors import CORS
 from db import db
 from models import *
-import json
 
 app = Flask(__name__)
 CORS(app)
@@ -24,8 +25,8 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.session.get(User, user_id)
 
-@login_manager.unauthorized_callback
-def unauthorised_res():
+@login_manager.unauthorized_handler
+def unauthorised():
     return make_response(
         jsonify(
             response="Unauthorized"
@@ -149,6 +150,26 @@ def get_current_user():
     )
 
 #Userzy
+@app.route('/api/user/<user_id>', methods=["GET"])
+@login_required
+def get_user(user_id):
+    user = User.query.get(user_id)
+    if user is None:
+        return make_response(
+            jsonify(
+                response=f"User with id {user_id} not found"
+            ),
+            404
+        )
+
+    return jsonify(
+        id=user.id,
+        username=user.username,
+        name=user.name,
+        surname=user.surname,
+        email=user.email
+    )
+
 @app.route('/api/userlist')
 def userlist():
     list_of_users = User.query.all()
@@ -178,18 +199,35 @@ def started_converstations():
     )
 
 
-@app.route('/api/user/<user_id>/send', methods=["GET", "POST"])
+@app.route('/api/user/<user_id>/send', methods=["POST"])
 @login_required
 def send_message(user_id):
     if User.query.get(user_id):
+        if not request.data:
+            return make_response(
+                jsonify(
+                    response="Request had an empty body"
+                ),
+                400
+            )
         params = request.json
+
+        if "content" not in params:
+            return make_response(
+                jsonify(
+                    response="Request missing the content field"
+                ),
+                400
+            )
+
         with app.app_context():
             message = PrivateMessage(
                 from_id=current_user.get_id(),
                 to_id=user_id,
                 content=params.get("content"),
-                attachment=params.get("attachment")
             )
+            if 'attachment' in params:
+                message.attachment = params.get("attachment")
             db.session.add(message)
             db.session.commit()
         return jsonify(
@@ -317,7 +355,7 @@ def get_chats():
     )
 
 
-@app.route('/api/chats/create', methods=["PUT"])
+@app.route('/api/chats/create', methods=["POST"])
 @login_required
 def create_chat():
     chat_name = 'Nowa grupa'
@@ -368,13 +406,21 @@ def add_user_to_chat(chat_id):
             404
         )
     cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
-    if cur_member is None or not cur_member.isAdmin:
+    if cur_member is None:
         return make_response(
             jsonify(
-                response=f"Logged in user (id {flask_login.current_user.id}) is not a member of groupchat with id {chat_id} or not a groupchat admin"
+                response=f"Groupchat with id {chat_id} not found"
+            ),
+            404
+        )
+    if not cur_member.isAdmin:
+        return make_response(
+            jsonify(
+                response=f"User is not an admin in groupchat with id {chat_id}"
             ),
             401
         )
+
     if request.data:
         data = request.json
         if 'user_id' in data:
@@ -427,16 +473,36 @@ def add_user_to_chat(chat_id):
             400
         )
 
-@app.route('/api/chats/{chat_id}/message/send', methods=["GET", "POST"])
+@app.route('/api/chats/<chat_id>/message/send', methods=["POST"])
 @login_required
-def send_message(chat_id):
+def send_group_message(chat_id):
     if GroupChat.query.get(chat_id):
-        params = request.json
+        if not request.data:
+            return make_response(
+                jsonify(
+                    response="Request had an empty body"
+                ),
+                400
+            )
+        data = request.json
+        cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
+        if cur_member is None:
+            make_response(
+                jsonify(
+                    response=f"Groupchat with id {chat_id} not found"
+                )
+            )
+
         with app.app_context():
-            # message = PrivateMessage(
-            #     content=params.get("content"),
-            #     attachment=params.get("attachment")
-            # )
+            message = GroupMessage(
+                member_id=cur_member.id,
+                groupchat_id=chat_id,
+                content=data["content"]
+            )
+
+            if 'attachment' in data:
+                message.attachment = data.get("attachment")
+
             db.session.add(message)
             db.session.commit()
         return jsonify(
@@ -450,7 +516,37 @@ def send_message(chat_id):
             404
         )
 
+@app.route('/api/chats/<chat_id>', methods=["GET"])
+@login_required
+def get_group_messages(chat_id):
+    if GroupChat.query.get(chat_id):
+        cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
+        if cur_member is None:
+            make_response(
+                jsonify(
+                    response=f"Groupchat with id {chat_id} not found"
+                )
+            )
 
+        messages = db.session.query(GroupMessage).filter_by(groupchat_id=chat_id).order_by(GroupMessage.timestamp.desc()).filter_by(isDeleted=False).all()
+
+        return jsonify(
+            [{
+                "id": message.id,
+                "member_id": message.member_id,
+                "groupchat_id": message.groupchat_id,
+                "content": message.content,
+                "timestamp": message.timestamp,
+                "attachment": message.attachment
+            } for message in messages]
+        )
+    else:
+        return make_response(
+            jsonify(
+                response=f"Groupchat with id {chat_id} not found"
+            ),
+            404
+        )
 
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
@@ -468,8 +564,8 @@ if __name__ == '__main__':
 # zrobione POST /api/chats/create
 # zrobione POST /api/chats/{id}/add_user
 # zrobione GET  /api/chats/ <- wyswietla czaty użytkownika
-# GET  /api/chats/{id}/ <- wyswietla wiadomosci na czacie
-# POST /api/chats/{id}/message/send
+# zrobione GET  /api/chats/{id} <- wyswietla wiadomosci na czacie
+# zrobione POST /api/chats/{id}/message/send
 
 
 # GET  /api/user/settings
