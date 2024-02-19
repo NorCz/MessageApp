@@ -142,11 +142,26 @@ def private_messages(user_id):
         messages = PrivateMessage.query.filter(PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id)))
         list_of_messages_between_users = []
         for i in messages:
-            list_of_messages_between_users.append({"from": i.from_id, "to": i.to_id, "content": i.content, "isDeleted": i.isDeleted, "timestamp": i.timestamp, "attachment": i.attachment})
+            list_of_messages_between_users.append({"message_id": i.id, "from": i.from_id, "to": i.to_id, "content": i.content, "isDeleted": i.isDeleted, "timestamp": i.timestamp, "attachment": i.attachment})
         return json.dumps(list_of_messages_between_users, default=str)
     else:
         return jsonify(
             response="User not found in the database!"
+        )
+
+
+@app.route('/api/delete/<message_id>', methods=["DELETE"])
+@login_required
+def delete_message(message_id):
+    message = PrivateMessage.query.filter_by(id=message_id).first()
+    if message.from_id == u_id:
+        message.isDeleted = True
+        return jsonify(
+            response="Message successfully deleted!"
+        )
+    else:
+        return jsonify(
+            response="You are not allowed to delete this message!"
         )
 
 
@@ -210,10 +225,12 @@ if __name__ == '__main__':
 # zrobione GET /api/
 # zrobione POST /api/login
 # zrobione POST /api/register
-# GET /api/userlist/
-# POST /api/user/{id} <- zwraca wiadomosci z danym użytkownikiem
-# POST /api/user/{id}/send
+# zrobione GET /api/userlist/
+# zrobione POST /api/user/{id} <- zwraca wiadomosci pomiędzy danymi użytkownikiem
+# zrobione POST /api/user/{id}/send
 
+
+# DELETE /api/message/{id}
 
 # POST /api/chats/create
 # POST /api/chats/{id}/add_user
