@@ -11,7 +11,7 @@ from models import *
 from datetime import timedelta
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 #app.config["SESSION_COOKIE_SECURE"] = True
