@@ -1,4 +1,4 @@
-import datetime
+from datetime import timedelta
 import json
 from code_generator import generate_code
 import flask_login
@@ -15,6 +15,7 @@ CORS(app, supports_credentials=True)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.secret_key = "zse4%RDX"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3)
 
 db.init_app(app)
 
@@ -35,6 +36,14 @@ def unauthorised():
         ),
         401
     )
+
+
+@app.after_request
+def handle_options(response):
+    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:3000"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
+    return response
 
 
 with app.app_context():
@@ -112,7 +121,8 @@ def login():
                 404
             )
         if check_password(data["password"], user.salt, user.password):
-            login_user(user, remember=True)
+            login_user(user)
+            session.permanent = True
             return jsonify(
                 response=True
             )
@@ -634,7 +644,7 @@ def get_group_messages(chat_id, page):
 
 
 if __name__ == '__main__':
-    app.run(ssl_context='adhoc')
+    app.run()
 
 # zrobione GET  /api/
 # zrobione POST /api/login
