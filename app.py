@@ -25,6 +25,7 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.session.get(User, user_id)
 
+
 @login_manager.unauthorized_handler
 def unauthorised():
     return make_response(
@@ -40,9 +41,9 @@ with app.app_context():
 
 
 @app.route('/api', methods=["GET", "POST"])
-def hello_world():  # TODO: List api routes!
+def hello_world():
     return jsonify(
-        response="API works correctly",
+        response="true",
     )
 
 
@@ -88,7 +89,7 @@ def login():
     if current_user.is_authenticated:
         return make_response(
             jsonify(
-                response=f"Already logged in as user with id {current_user.id}"
+                response=f"false"
             ),
             409
         )
@@ -97,11 +98,11 @@ def login():
         if "username" not in data or "password" not in data:
             return make_response(
                 jsonify(
-                    response="Request body missing username or password"
+                    response="false"
                 ),
                 400
             )
-        user = User.query.filter_by(username=data["username"]).first()
+        user = User.query.filter((User.username == data["username"]) | (User.email == data["username"])).first()
         if user is None:
             return make_response(
                 jsonify(
@@ -110,21 +111,21 @@ def login():
                 404
             )
         if check_password(data["password"], user.salt, user.password):
-            login_user(user)
+            login_user(user, remember=True)
             return jsonify(
-                response="User successfully logged in!"
+                response="true"
             )
         else:
             return make_response(
                 jsonify(
-                    response="Username or password does not match!"
+                    response="false"
                 ),
                 401
             )
     else:
         return make_response(
             jsonify(
-                response="Request had an empty body"
+                response="false"
             ),
             400
         )
@@ -135,8 +136,9 @@ def login():
 def logout():
     logout_user()
     return jsonify(
-        response="User successfully logged out!"
+        response="true"
     )
+
 
 @app.route('/api/user', methods=["GET"])
 @login_required
@@ -149,7 +151,8 @@ def get_current_user():
         email=current_user.email
     )
 
-#Userzy
+
+# Userzy
 @app.route('/api/user/<user_id>', methods=["GET"])
 @login_required
 def get_user(user_id):
@@ -170,12 +173,15 @@ def get_user(user_id):
         email=user.email
     )
 
+
 @app.route('/api/userlist')
 def userlist():
     list_of_users = User.query.all()
     json_of_users = {}
     for i in range(len(list_of_users)):
-        json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username, "name": list_of_users[i].name, "surname": list_of_users[i].surname, "email": list_of_users[i].email}})
+        json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
+                                           "name": list_of_users[i].name, "surname": list_of_users[i].surname,
+                                           "email": list_of_users[i].email}})
     return json.dumps(json_of_users)
 
 
@@ -183,7 +189,8 @@ def userlist():
 @login_required
 def started_converstations():
     u_id = current_user.get_id()
-    from_messages = PrivateMessage.query.filter((PrivateMessage.from_id == u_id) | (PrivateMessage.to_id == u_id)).distinct()
+    from_messages = PrivateMessage.query.filter(
+        (PrivateMessage.from_id == u_id) | (PrivateMessage.to_id == u_id)).distinct()
     list_of_messages = []
     for i in from_messages:
         list_of_messages.append(i)
@@ -206,7 +213,7 @@ def send_message(user_id):
         if not request.data:
             return make_response(
                 jsonify(
-                    response="Request had an empty body"
+                    response="false"
                 ),
                 400
             )
@@ -215,7 +222,7 @@ def send_message(user_id):
         if "content" not in params:
             return make_response(
                 jsonify(
-                    response="Request missing the content field"
+                    response="false"
                 ),
                 400
             )
@@ -231,30 +238,35 @@ def send_message(user_id):
             db.session.add(message)
             db.session.commit()
         return jsonify(
-            response="Message sent properly!"
+            response="true"
         )
     else:
         return make_response(
             jsonify(
-                response=f"User with id {user_id} not found"
+                response=f"false"
             ),
             404
         )
 
 
-@app.route('/api/user/<user_id>', methods=["GET"])
+@app.route('/api/user/<user_id>/<page>', methods=["GET"])
 @login_required
-def private_messages(user_id):
+def private_messages(user_id, page):
     if User.query.get(user_id):
         u_id = current_user.get_id()
-        messages = PrivateMessage.query.filter(PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id)))
+        messages = PrivateMessage.query.filter(
+            PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id))).filter_by(
+            isDeleted=False)
         list_of_messages_between_users = []
         for i in messages:
-            list_of_messages_between_users.append({"message_id": i.id, "from": i.from_id, "to": i.to_id, "content": i.content, "isDeleted": i.isDeleted, "timestamp": i.timestamp, "attachment": i.attachment})
+            list_of_messages_between_users.append(
+                {"message_id": i.id, "from": i.from_id, "to": i.to_id, "content": i.content, "isDeleted": i.isDeleted,
+                 "timestamp": i.timestamp, "attachment": i.attachment})
+        list_of_messages_between_users = list_of_messages_between_users[(int(page) - 1) * 30: int(page) * 30]
         return json.dumps(list_of_messages_between_users, default=str)
     else:
         return jsonify(
-            response="User not found in the database!"
+            response="false"
         )
 
 
@@ -265,7 +277,7 @@ def delete_message(message_id):
     if message is None:
         return make_response(
             jsonify(
-                response=f"Message with id {message_id} not found"
+                response=f"false"
             ),
             404
         )
@@ -273,31 +285,31 @@ def delete_message(message_id):
         message.isDeleted = True
         db.session.commit()
         return jsonify(
-            response="Message successfully deleted!"
+            response="true"
         )
     else:
         return make_response(
             jsonify(
-                response="You are not allowed to delete this message!"
+                response="false"
             ),
             403
         )
 
 
-@app.route('/api/change_password', methods=["PUT"])
-def change_password():
+@app.route('/api/recover_password', methods=["PUT"])
+def recover_password():
     u_id = current_user.get_id()
     data = request.json
-    user = User.query.filter_by(id=u_id).first()
+    user = User.query.filter((User.username == data["username"]) | (User.email == data["username"])).first()
     if "password" in data:
         user.password = hash_password_with_salt_already_generated(data["password"], user.salt)
         return jsonify(
-            response="Password changed"
+            response="true"
         )
     else:
         return make_response(
             jsonify(
-                response="No password in request body!"
+                response="false"
             ),
             400
         )
@@ -329,7 +341,24 @@ def manage():
     )
 
 
-#Chaty
+@app.route('/api/change_image', methods=["POST"])
+@login_required
+def change_image():
+    data = request.json
+    u_id = current_user.get_id()
+    if "image" in data:
+        user = User.query.filter_by(id=u_id)
+        user.image = data["image"]
+        return jsonify(
+            response="true"
+        )
+    else:
+        return jsonify(
+            response="false"
+        )
+
+
+# Chaty
 @app.route('/api/chats', methods=["GET"])
 @login_required
 def get_chats():
@@ -337,7 +366,8 @@ def get_chats():
         ChatMember.user_id == current_user.id).all()
     chats = []
     for row in result:
-        members = db.session.query(ChatMember.id, ChatMember.user_id, ChatMember.nickname, ChatMember.isAdmin).filter_by(groupchat_id=row.id).all()
+        members = db.session.query(ChatMember.id, ChatMember.user_id, ChatMember.nickname,
+                                   ChatMember.isAdmin).filter_by(groupchat_id=row.id).all()
         chats.append(
             {
                 "id": row.id,
@@ -405,7 +435,8 @@ def add_user_to_chat(chat_id):
             ),
             404
         )
-    cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
+    cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(
+        id=chat_id).first()
     if cur_member is None:
         return make_response(
             jsonify(
@@ -433,7 +464,8 @@ def add_user_to_chat(chat_id):
                     ),
                     404
                 )
-            if db.session.query(ChatMember).filter_by(user_id=user_id).join(GroupChat).filter_by(id=chat_id).first() is not None:
+            if db.session.query(ChatMember).filter_by(user_id=user_id).join(GroupChat).filter_by(
+                    id=chat_id).first() is not None:
                 return make_response(
                     jsonify(
                         response=f"User with id {user_id} is already a member of groupchat with id {chat_id}."
@@ -473,6 +505,7 @@ def add_user_to_chat(chat_id):
             400
         )
 
+
 @app.route('/api/chats/<chat_id>/message/send', methods=["POST"])
 @login_required
 def send_group_message(chat_id):
@@ -480,16 +513,17 @@ def send_group_message(chat_id):
         if not request.data:
             return make_response(
                 jsonify(
-                    response="Request had an empty body"
+                    response="true"
                 ),
                 400
             )
         data = request.json
-        cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
+        cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(
+            GroupChat).filter_by(id=chat_id).first()
         if cur_member is None:
             make_response(
                 jsonify(
-                    response=f"Groupchat with id {chat_id} not found"
+                    response=f"false"
                 )
             )
 
@@ -506,29 +540,32 @@ def send_group_message(chat_id):
             db.session.add(message)
             db.session.commit()
         return jsonify(
-            response="Message sent properly!"
+            response="true"
         )
     else:
         return make_response(
             jsonify(
-                response=f"Groupchat with id {chat_id} not found"
+                response=f"false"
             ),
             404
         )
 
-@app.route('/api/chats/<chat_id>', methods=["GET"])
+
+@app.route('/api/chats/<chat_id>/<page>', methods=["GET"])
 @login_required
-def get_group_messages(chat_id):
+def get_group_messages(chat_id, page):
     if GroupChat.query.get(chat_id):
-        cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(GroupChat).filter_by(id=chat_id).first()
+        cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(
+            GroupChat).filter_by(id=chat_id).first()
         if cur_member is None:
             make_response(
                 jsonify(
-                    response=f"Groupchat with id {chat_id} not found"
+                    response=f"false"
                 )
             )
 
-        messages = db.session.query(GroupMessage).filter_by(groupchat_id=chat_id).order_by(GroupMessage.timestamp.desc()).filter_by(isDeleted=False).all()
+        messages = db.session.query(GroupMessage).filter_by(groupchat_id=chat_id).order_by(
+            GroupMessage.timestamp.desc()).filter_by(isDeleted=False).all()
 
         return jsonify(
             [{
@@ -538,15 +575,16 @@ def get_group_messages(chat_id):
                 "content": message.content,
                 "timestamp": message.timestamp,
                 "attachment": message.attachment
-            } for message in messages]
+            } for message in messages][(int(page) - 1) * 30: int(page) * 30]
         )
     else:
         return make_response(
             jsonify(
-                response=f"Groupchat with id {chat_id} not found"
+                response=f"false"
             ),
             404
         )
+
 
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
