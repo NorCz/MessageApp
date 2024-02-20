@@ -186,6 +186,7 @@ def get_user(user_id):
 
 
 @app.route('/api/userlist')
+@login_required
 def userlist():
     list_of_users = User.query.all()
     json_of_users = {}
