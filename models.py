@@ -65,3 +65,12 @@ class PrivateMessage(db.Model):
     timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
     attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
 
+
+class RestoreCodes(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    user_id = db.Column(db.Integer, unique=False, nullable=False)
+    code = db.Column(db.String, unique=False, nullable=False)
+    timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
+    confirmed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
+
+

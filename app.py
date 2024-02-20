@@ -1,5 +1,6 @@
+import datetime
 import json
-
+from code_generator import generate_code
 import flask_login
 from flask import Flask, request, make_response, session
 from flask import jsonify
@@ -8,15 +9,12 @@ from flask_login import login_user, LoginManager, logout_user, login_required, c
 from flask_cors import CORS
 from db import db
 from models import *
-from datetime import timedelta
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-#app.config["SESSION_COOKIE_SECURE"] = True
-app.secret_key = "9883f88db33793cae61c00a1a86a3e629f84c381687edbd62f83db96b9f36949"
-app.permanent_session_lifetime = timedelta(days=3)
+app.secret_key = "zse4%RDX"
 
 db.init_app(app)
 
@@ -46,7 +44,7 @@ with app.app_context():
 @app.route('/api', methods=["GET", "POST"])
 def hello_world():
     return jsonify(
-        response="true",
+        response=True,
     )
 
 
@@ -92,7 +90,7 @@ def login():
     if current_user.is_authenticated:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             409
         )
@@ -101,7 +99,7 @@ def login():
         if "username" not in data or "password" not in data:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 400
             )
@@ -114,22 +112,21 @@ def login():
                 404
             )
         if check_password(data["password"], user.salt, user.password):
-            session.permanent = True
-            login_user(user)
+            login_user(user, remember=True)
             return jsonify(
-                response="true"
+                response=True
             )
         else:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 401
             )
     else:
         return make_response(
             jsonify(
-                response="false"
+                response=False
             ),
             400
         )
@@ -140,7 +137,7 @@ def login():
 def logout():
     logout_user()
     return jsonify(
-        response="true"
+        response=True
     )
 
 
@@ -217,7 +214,7 @@ def send_message(user_id):
         if not request.data:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 400
             )
@@ -226,7 +223,7 @@ def send_message(user_id):
         if "content" not in params:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 400
             )
@@ -242,12 +239,12 @@ def send_message(user_id):
             db.session.add(message)
             db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
@@ -270,7 +267,7 @@ def private_messages(user_id, page):
         return json.dumps(list_of_messages_between_users, default=str)
     else:
         return jsonify(
-            response="false"
+            response=False
         )
 
 
@@ -281,7 +278,7 @@ def delete_message(message_id):
     if message is None:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
@@ -289,34 +286,80 @@ def delete_message(message_id):
         message.isDeleted = True
         db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return make_response(
             jsonify(
-                response="false"
+                response=False
             ),
             403
         )
 
 
-@app.route('/api/recover_password', methods=["PUT"])
+@app.route('/api/send_email_with_recovery_code', methods=["POST"])
 def recover_password():
-    u_id = current_user.get_id()
     data = request.json
-    user = User.query.filter((User.username == data["username"]) | (User.email == data["username"])).first()
-    if "password" in data:
-        user.password = hash_password_with_salt_already_generated(data["password"], user.salt)
+    if "username" in data:
+        user = User.query.filter((User.username == data["username"]) | (User.email == data["username"])).first()
+        with app.app_context():
+            code = RestoreCodes(
+                user_id=user.id,
+                code=generate_code()
+            )
+            db.session.add(code)
+            db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
-        return make_response(
-            jsonify(
-                response="false"
-            ),
-            400
+        return jsonify(
+            response=False
         )
+
+
+@app.route('/api/confirm_code', methods=["POST"])
+def confirm_code():
+    data = request.json
+    if "code" in data and "user" in data:
+        code = RestoreCodes.query.filter_by(data["code"]).order_by(RestoreCodes.timestamp.desc()).filter_by(user_id=data["user"]).filter_by(confirmed=False).all()
+        if len(code) == 0:
+            return jsonify(
+                response=False
+            )
+        else:
+            #Bierzemy ostatni(zakładamy, że jest najwczesniejszy, czyli powinien być dobry)
+            code = code[len(code) - 1]
+            code.confirmed = True
+            db.session.commit()
+            return jsonify(
+                response=code.id
+            )
+    else:
+        return jsonify(
+            response=False
+        )
+
+
+@app.route('/api/reset_password', methods=["POST"])
+def reset_password():
+    data = request.json
+    if "password" in data and "code" in data:
+        code = RestoreCodes.query.filter_by(id=data["code"]).first()
+        if datetime.now() - code.timestamp < datetime.timedelta(minutes=5):
+            user = User.query.filter_by(id=code.user_id).first()
+            user.password = hash_password_with_salt_already_generated(data["password"], user.salt)
+            db.session.commit()
+            return jsonify(
+                response=True
+            )
+        else:
+            return jsonify(
+                response=False
+            )
+    return jsonify(
+        response=False
+    )
 
 
 @app.route('/api/manage/', methods=["PUT"])
@@ -354,11 +397,11 @@ def change_image():
         user = User.query.filter_by(id=u_id)
         user.image = data["image"]
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return jsonify(
-            response="false"
+            response=False
         )
 
 
@@ -517,7 +560,7 @@ def send_group_message(chat_id):
         if not request.data:
             return make_response(
                 jsonify(
-                    response="true"
+                    response=True
                 ),
                 400
             )
@@ -527,7 +570,7 @@ def send_group_message(chat_id):
         if cur_member is None:
             make_response(
                 jsonify(
-                    response=f"false"
+                    response=False
                 )
             )
 
@@ -544,12 +587,12 @@ def send_group_message(chat_id):
             db.session.add(message)
             db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
@@ -564,7 +607,7 @@ def get_group_messages(chat_id, page):
         if cur_member is None:
             make_response(
                 jsonify(
-                    response=f"false"
+                    response=False
                 )
             )
 
@@ -584,7 +627,7 @@ def get_group_messages(chat_id, page):
     else:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
