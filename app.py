@@ -87,7 +87,7 @@ def register():
     else:
         return make_response(
             jsonify(
-                response="Request had an empty body"
+                response=False
             ),
             400
         )
@@ -116,9 +116,9 @@ def login():
         if user is None:
             return make_response(
                 jsonify(
-                    response=f"User with username {data['username']} not found"
+                    response=False
                 ),
-                404
+                401
             )
         if check_password(data["password"], user.salt, user.password):
             login_user(user)
@@ -185,7 +185,7 @@ def get_user(user_id):
     )
 
 
-@app.route('/api/userlist')
+@app.route('/api/userlist', methods=["GET"])
 @login_required
 def userlist():
     list_of_users = User.query.all()
