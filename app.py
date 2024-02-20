@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-app.config[]
+#app.config["SESSION_COOKIE_SECURE"] = True
 app.secret_key = "9883f88db33793cae61c00a1a86a3e629f84c381687edbd62f83db96b9f36949"
 
 db.init_app(app)
