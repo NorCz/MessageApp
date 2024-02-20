@@ -271,9 +271,10 @@ def private_messages(user_id, page):
             isDeleted=False)
         list_of_messages_between_users = []
         for i in messages:
-            list_of_messages_between_users.append(
-                {"message_id": i.id, "from": i.from_id, "to": i.to_id, "content": i.content, "isDeleted": i.isDeleted,
-                 "timestamp": i.timestamp, "attachment": i.attachment})
+            if not i.isDeleted:
+                list_of_messages_between_users.append(
+                    {"message_id": i.id, "from": i.from_id, "to": i.to_id, "content": i.content,
+                     "timestamp": i.timestamp, "attachment": i.attachment})
         list_of_messages_between_users = list_of_messages_between_users[(int(page) - 1) * 30: int(page) * 30]
         return json.dumps(list_of_messages_between_users, default=str)
     else:
