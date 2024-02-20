@@ -264,7 +264,7 @@ def send_message(user_id):
 @app.route('/api/user/<user_id>/<page>', methods=["GET"])
 @login_required
 def private_messages(user_id, page):
-    if User.query.get(user_id):
+    if User.query.get(user_id) and page.isdigit() and int(page) >= 0:
         u_id = current_user.get_id()
         messages = PrivateMessage.query.filter(
             PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id))).filter_by(
@@ -278,8 +278,11 @@ def private_messages(user_id, page):
         list_of_messages_between_users = list_of_messages_between_users[(int(page) - 1) * 30: int(page) * 30]
         return json.dumps(list_of_messages_between_users, default=str)
     else:
-        return jsonify(
-            response=False
+        return make_response(
+            jsonify(
+                response=False
+            ),
+            400
         )
 
 
@@ -613,7 +616,7 @@ def send_group_message(chat_id):
 @app.route('/api/chats/<chat_id>/<page>', methods=["GET"])
 @login_required
 def get_group_messages(chat_id, page):
-    if GroupChat.query.get(chat_id):
+    if GroupChat.query.get(chat_id) and page.isdigit() and int(page) >= 0:
         cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(
             GroupChat).filter_by(id=chat_id).first()
         if cur_member is None:
