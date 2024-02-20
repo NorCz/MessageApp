@@ -16,6 +16,7 @@ CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 #app.config["SESSION_COOKIE_SECURE"] = True
 app.secret_key = "9883f88db33793cae61c00a1a86a3e629f84c381687edbd62f83db96b9f36949"
+app.permanent_session_lifetime = timedelta(days=3)
 
 db.init_app(app)
 
@@ -113,7 +114,8 @@ def login():
                 404
             )
         if check_password(data["password"], user.salt, user.password):
-            login_user(user, duration=timedelta(days=3))
+            session.permanent = True
+            login_user(user)
             return jsonify(
                 response="true"
             )
