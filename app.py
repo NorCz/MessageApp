@@ -44,7 +44,7 @@ with app.app_context():
 @app.route('/api', methods=["GET", "POST"])
 def hello_world():
     return jsonify(
-        response="true",
+        response=True,
     )
 
 
@@ -90,7 +90,7 @@ def login():
     if current_user.is_authenticated:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             409
         )
@@ -99,7 +99,7 @@ def login():
         if "username" not in data or "password" not in data:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 400
             )
@@ -114,19 +114,19 @@ def login():
         if check_password(data["password"], user.salt, user.password):
             login_user(user, remember=True)
             return jsonify(
-                response="true"
+                response=True
             )
         else:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 401
             )
     else:
         return make_response(
             jsonify(
-                response="false"
+                response=False
             ),
             400
         )
@@ -137,7 +137,7 @@ def login():
 def logout():
     logout_user()
     return jsonify(
-        response="true"
+        response=True
     )
 
 
@@ -214,7 +214,7 @@ def send_message(user_id):
         if not request.data:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 400
             )
@@ -223,7 +223,7 @@ def send_message(user_id):
         if "content" not in params:
             return make_response(
                 jsonify(
-                    response="false"
+                    response=False
                 ),
                 400
             )
@@ -239,12 +239,12 @@ def send_message(user_id):
             db.session.add(message)
             db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
@@ -267,7 +267,7 @@ def private_messages(user_id, page):
         return json.dumps(list_of_messages_between_users, default=str)
     else:
         return jsonify(
-            response="false"
+            response=False
         )
 
 
@@ -278,7 +278,7 @@ def delete_message(message_id):
     if message is None:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
@@ -286,12 +286,12 @@ def delete_message(message_id):
         message.isDeleted = True
         db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return make_response(
             jsonify(
-                response="false"
+                response=False
             ),
             403
         )
@@ -397,11 +397,11 @@ def change_image():
         user = User.query.filter_by(id=u_id)
         user.image = data["image"]
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return jsonify(
-            response="false"
+            response=False
         )
 
 
@@ -560,7 +560,7 @@ def send_group_message(chat_id):
         if not request.data:
             return make_response(
                 jsonify(
-                    response="true"
+                    response=True
                 ),
                 400
             )
@@ -570,7 +570,7 @@ def send_group_message(chat_id):
         if cur_member is None:
             make_response(
                 jsonify(
-                    response=f"false"
+                    response=False
                 )
             )
 
@@ -587,12 +587,12 @@ def send_group_message(chat_id):
             db.session.add(message)
             db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
@@ -607,7 +607,7 @@ def get_group_messages(chat_id, page):
         if cur_member is None:
             make_response(
                 jsonify(
-                    response=f"false"
+                    response=False
                 )
             )
 
@@ -627,7 +627,7 @@ def get_group_messages(chat_id, page):
     else:
         return make_response(
             jsonify(
-                response=f"false"
+                response=False
             ),
             404
         )
