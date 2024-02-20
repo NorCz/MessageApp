@@ -1,5 +1,6 @@
+import datetime
 import json
-
+from code_generator import generate_code
 import flask_login
 from flask import Flask, request, make_response, session
 from flask import jsonify
@@ -296,23 +297,69 @@ def delete_message(message_id):
         )
 
 
-@app.route('/api/recover_password', methods=["PUT"])
+@app.route('/api/send_email_with_recovery_code', methods=["POST"])
 def recover_password():
-    u_id = current_user.get_id()
     data = request.json
-    user = User.query.filter((User.username == data["username"]) | (User.email == data["username"])).first()
-    if "password" in data:
-        user.password = hash_password_with_salt_already_generated(data["password"], user.salt)
+    if "username" in data:
+        user = User.query.filter((User.username == data["username"]) | (User.email == data["username"])).first()
+        with app.app_context():
+            code = RestoreCodes(
+                user_id=user.id,
+                code=generate_code()
+            )
+            db.session.add(code)
+            db.session.commit()
         return jsonify(
-            response="true"
+            response=True
         )
     else:
-        return make_response(
-            jsonify(
-                response="false"
-            ),
-            400
+        return jsonify(
+            response=False
         )
+
+
+@app.route('/api/confirm_code', methods=["POST"])
+def confirm_code():
+    data = request.json
+    if "code" in data and "user" in data:
+        code = RestoreCodes.query.filter_by(data["code"]).order_by(RestoreCodes.timestamp.desc()).filter_by(user_id=data["user"]).filter_by(confirmed=False).all()
+        if len(code) == 0:
+            return jsonify(
+                response=False
+            )
+        else:
+            #Bierzemy ostatni(zakładamy, że jest najwczesniejszy, czyli powinien być dobry)
+            code = code[len(code) - 1]
+            code.confirmed = True
+            db.session.commit()
+            return jsonify(
+                response=code.id
+            )
+    else:
+        return jsonify(
+            response=False
+        )
+
+
+@app.route('/api/reset_password', methods=["POST"])
+def reset_password():
+    data = request.json
+    if "password" in data and "code" in data:
+        code = RestoreCodes.query.filter_by(id=data["code"]).first()
+        if datetime.now() - code.timestamp < datetime.timedelta(minutes=5):
+            user = User.query.filter_by(id=code.user_id).first()
+            user.password = hash_password_with_salt_already_generated(data["password"], user.salt)
+            db.session.commit()
+            return jsonify(
+                response=True
+            )
+        else:
+            return jsonify(
+                response=False
+            )
+    return jsonify(
+        response=False
+    )
 
 
 @app.route('/api/manage/', methods=["PUT"])
