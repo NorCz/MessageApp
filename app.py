@@ -8,12 +8,14 @@ from flask_login import login_user, LoginManager, logout_user, login_required, c
 from flask_cors import CORS
 from db import db
 from models import *
+from datetime import timedelta
 
 app = Flask(__name__)
 CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-app.secret_key = "zse4%RDX"
+app.config[]
+app.secret_key = "9883f88db33793cae61c00a1a86a3e629f84c381687edbd62f83db96b9f36949"
 
 db.init_app(app)
 
@@ -111,7 +113,7 @@ def login():
                 404
             )
         if check_password(data["password"], user.salt, user.password):
-            login_user(user, remember=True)
+            login_user(user, duration=timedelta(days=3))
             return jsonify(
                 response="true"
             )
