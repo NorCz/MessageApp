@@ -508,7 +508,7 @@ def add_user_to_chat(chat_id):
             jsonify(
                 response=f"User is not an admin in groupchat with id {chat_id}"
             ),
-            401
+            403
         )
 
     if request.data:
