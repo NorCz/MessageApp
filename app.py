@@ -4,7 +4,7 @@ import json
 from code_generator import generate_code
 import flask_login
 from flask import Flask, request, make_response, session
-from flask import jsonify, send_file
+from flask import jsonify
 from hash import hash_password, check_password, hash_password_with_salt_already_generated
 from flask_login import login_user, LoginManager, logout_user, login_required, current_user
 from flask_cors import CORS
@@ -437,13 +437,14 @@ def change_image():
     )
 
 
-@app.route('/api/get_image', methods=["POST"])
+@app.route('/api/get_image', methods=["GET"])
 @login_required
 def get_image():
-    data = request.json
-    if "id" in data:
-        user = User.query.filter_by(id=data["id"]).first()
-        return send_file(user.image, mimetype="multipart/form-data")
+    u_id = current_user.get_id()
+    user = User.query.filter_by(id=u_id).first()
+    response = make_response(user.image, 404)
+    response.mimetype = "text/plain"
+    return response
 
 
 # Chaty
