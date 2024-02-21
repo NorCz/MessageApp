@@ -1,9 +1,10 @@
+import datetime
 from datetime import timedelta
 import json
 from code_generator import generate_code
 import flask_login
 from flask import Flask, request, make_response, session
-from flask import jsonify
+from flask import jsonify, send_file
 from hash import hash_password, check_password, hash_password_with_salt_already_generated
 from flask_login import login_user, LoginManager, logout_user, login_required, current_user
 from flask_cors import CORS
@@ -56,6 +57,24 @@ def hello_world():
     return jsonify(
         response=True,
     )
+
+
+@app.route('/api/userActive', methods=["POST"])
+def user_active():
+    u_id = current_user.get_id()
+    User.query.filter_by(id=u_id).timestamp = datetime.datetime.now()
+    db.session.commit()
+
+
+@app.route('/api/getLoggedUsers', methods=["POST"])
+def get_logged_users():
+    users = User.query.all()
+    list_of_active_users = []
+    time = datetime.datetime.now()
+    for u in users:
+        if datetime.now() - u.lastRequest < datetime.timedelta(minutes=5):
+            list_of_active_users.append(u.id)
+    return json. dumps(list_of_active_users)
 
 
 # username, password, name, surname, email
@@ -408,11 +427,11 @@ def manage():
 @app.route('/api/change_image', methods=["POST"])
 @login_required
 def change_image():
-    data = request.json
+    file = request.files
     u_id = current_user.get_id()
-    if "image" in data:
+    if "image" in file:
         user = User.query.filter_by(id=u_id)
-        user.image = data["image"]
+        user.image = file["image"]
         return jsonify(
             response=True
         )
@@ -420,6 +439,14 @@ def change_image():
         return jsonify(
             response=False
         )
+
+
+@app.route('/api/get_image', methods=["GET"])
+def get_image():
+    data = request.json
+    if "user" in data:
+        user = User.query.filter_by(id=data["user"]).first()
+        return send_file(user.image)
 
 
 # Chaty
