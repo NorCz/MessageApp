@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String, unique=False, nullable=False)
     surname = db.Column(db.String, unique=False, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    image = db.Column(db.LargeBinary, unique=False, nullable=True, default=None)
+    image = db.Column(db.String, unique=False, nullable=True, default=None)
     lastRequest = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.now)
 
 

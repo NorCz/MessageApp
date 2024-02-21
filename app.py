@@ -427,26 +427,23 @@ def manage():
 @app.route('/api/change_image', methods=["POST"])
 @login_required
 def change_image():
-    file = request.files
+    data = request.data.decode('utf-8')
     u_id = current_user.get_id()
-    if "image" in file:
-        user = User.query.filter_by(id=u_id)
-        user.image = file["image"]
-        return jsonify(
-            response=True
-        )
-    else:
-        return jsonify(
-            response=False
-        )
+    user = User.query.filter_by(id=u_id).first()
+    user.image = data
+    db.session.commit()
+    return jsonify(
+        response=True
+    )
 
 
-@app.route('/api/get_image', methods=["GET"])
+@app.route('/api/get_image', methods=["POST"])
+@login_required
 def get_image():
     data = request.json
-    if "user" in data:
-        user = User.query.filter_by(id=data["user"]).first()
-        return send_file(user.image)
+    if "id" in data:
+        user = User.query.filter_by(id=data["id"]).first()
+        return send_file(user.image, mimetype="multipart/form-data")
 
 
 # Chaty
