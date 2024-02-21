@@ -9,6 +9,7 @@ from flask_login import login_user, LoginManager, logout_user, login_required, c
 from flask_cors import CORS
 from db import db
 from models import *
+from send_email import send_email
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -322,6 +323,7 @@ def recover_password():
                 user_id=user.id,
                 code=generate_code()
             )
+            send_email(user.email, code)
             db.session.add(code)
             db.session.commit()
         return jsonify(
