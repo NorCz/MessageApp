@@ -5,6 +5,9 @@ Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https
 
 Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/MessageApp/releases), lub bezpośrednio z [repozytorium Docker](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
 
+## Wymagiania
+* [Docker](https://www.docker.com/products/docker-desktop/), lub inne oprogramowanie lub usługa zdolna do uruchamiania kontenerów Docker.
+
 ## Budowa manualna
 
 ### Wymagane pliki:
@@ -41,6 +44,9 @@ The Backend bundles and exposes the Frontend server during build, and uses a sim
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
 Prebuilt images can also be downloaded from the [Releases](https://github.com/NorCz/MessageApp/releases) tab, or directly from the [Docker repository](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
+
+## Requirements
+* [Docker](https://www.docker.com/products/docker-desktop/), or other software or service capable of running Docker containers.
 
 ## Manual building
 
