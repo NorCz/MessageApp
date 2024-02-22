@@ -29,4 +29,4 @@ docker build -t messageapp:latest .
 docker run -p 127.0.0.1:3000:3000 messageapp
 ```
 
-Pre-built images can also be downloaded from the Releases tab.
+Pre-built images can also be downloaded from the [Releases](https://github.com/NorCz/MessageApp/releases) tab.
