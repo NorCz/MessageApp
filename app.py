@@ -14,7 +14,7 @@ from models import *
 from send_email import send_email
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv('.env', verbose=True)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -46,7 +46,7 @@ def unauthorised():
 
 @app.after_request
 def handle_options(response):
-    response.headers["Access-Control-Allow-Origin"] = "https://localhost:3000"
+    response.headers["Access-Control-Allow-Origin"] = "https://127.0.0.1:3000"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
     return response

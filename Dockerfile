@@ -13,6 +13,7 @@ RUN apt-get install -y nodejs
 # Initialise Python Backend
 RUN pip install -r requirements.txt
 RUN pip install uwsgi -I --no-cache-dir
+COPY .env /app/backend/
 COPY *.py /app/backend/
 COPY /certs/messageapp.crt /app/backend
 COPY /certs/messageapp.key /app/backend
