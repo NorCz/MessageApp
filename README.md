@@ -3,7 +3,7 @@ W procesie budowania Backend zawiera serwer Frontendu i wystawia go na komunikac
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
-Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/MessageApp/releases).
+Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/MessageApp/releases), lub bezpośrednio z [repozytorium Docker](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
 
 ## Budowa manualna
 
@@ -40,7 +40,7 @@ The Backend bundles and exposes the Frontend server during build, and uses a sim
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
-Prebuilt images can also be downloaded from the [Releases](https://github.com/NorCz/MessageApp/releases) tab.
+Prebuilt images can also be downloaded from the [Releases](https://github.com/NorCz/MessageApp/releases) tab, or directly from the [Docker repository](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
 
 ## Manual building
 
