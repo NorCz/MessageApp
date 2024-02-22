@@ -1,4 +1,5 @@
 # MessageApp - backend server
+The backend bundles and exposes the Frontend server during build, and uses a simple proxy mechanism to operate both servers on the same origin. Both internal and external communication from the servers is encrypted using a provided certificate.
 
 ## Manual building
 
