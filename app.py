@@ -1,3 +1,4 @@
+import os
 import datetime
 from datetime import timedelta
 import json
@@ -11,12 +12,15 @@ from flask_cors import CORS
 from db import db
 from models import *
 from send_email import send_email
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-app.secret_key = "zse4%RDX"
+app.secret_key = os.getenv('secret_key')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3)
 
 db.init_app(app)
