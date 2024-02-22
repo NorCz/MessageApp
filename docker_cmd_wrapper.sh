@@ -5,8 +5,9 @@ npx local-web-server \
   --port 3000 \
   --directory build \
   --spa index.html \
-  --https \
   --rewrite '/api/(.*) -> https://127.0.0.1:5000/api/$1' \
+  --key /app/backend/messageapp.key \
+  --cert /app/backend/messageapp.crt \
   --log.format tiny &
 
 cd /app/backend
