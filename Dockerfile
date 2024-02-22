@@ -13,17 +13,18 @@ RUN apt-get install -y nodejs
 # Initialise Python Backend
 RUN pip install -r requirements.txt
 RUN pip install uwsgi -I --no-cache-dir
+COPY /.env /app/backend/
 COPY *.py /app/backend/
 COPY /certs/messageapp.crt /app/backend
 COPY /certs/messageapp.key /app/backend
 
-# Initialise Python Frontend
+# Initialise React Frontend
 COPY /frontend /app/frontend
+COPY .env /app/frontend/src
 WORKDIR /app/frontend
 RUN npm i
 RUN npm i local-web-server
 RUN npm run build
-COPY .env /app/frontend/build
 
 # Run wrapper script
 WORKDIR /

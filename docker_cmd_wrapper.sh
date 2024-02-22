@@ -1,12 +1,12 @@
 set -m
-source /app/frontend/build/.env
+source /app/frontend/src/.env
 
 cd /app/frontend
 npx local-web-server \
   --port $server_port \
   --directory build \
   --spa index.html \
-  --rewrite "/api/(.*) -> https://127.0.0.1:5000/api/$1" \
+  --rewrite '/api/(.*) -> https://127.0.0.1:5000/api/$1' \
   --key /app/backend/messageapp.key \
   --cert /app/backend/messageapp.crt \
   --log.format tiny &
