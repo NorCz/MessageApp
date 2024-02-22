@@ -37,7 +37,7 @@ git submodule update --init --recursive
 Teraz możesz zbudować i uruchomić kontener Docker.
 ```bash
 docker build -t messageapp:latest .
-docker run -dp 127.0.0.1:3000:3000 messageapp
+docker run -d --env-file .env messageapp
 ```
 
 # [EN] MessageApp - Backend server
@@ -79,5 +79,5 @@ git submodule update --init --recursive
 Now, you can create and run the Docker container.
 ```bash
 docker build -t messageapp:latest .
-docker run -dp 127.0.0.1:3000:3000 messageapp
+docker run -d --env-file .env messageapp
 ```
