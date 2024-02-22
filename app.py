@@ -60,21 +60,27 @@ def hello_world():
 
 
 @app.route('/api/userActive', methods=["POST"])
+@login_required
 def user_active():
     u_id = current_user.get_id()
-    User.query.filter_by(id=u_id).timestamp = datetime.datetime.now()
+    user = User.query.filter_by(id=u_id).first()
+    user.lastRequest = datetime.now()
     db.session.commit()
+    return jsonify(
+        response=True
+    )
 
 
-@app.route('/api/getLoggedUsers', methods=["POST"])
+@app.route('/api/getLoggedUsers', methods=["GET"])
 def get_logged_users():
     users = User.query.all()
     list_of_active_users = []
-    time = datetime.datetime.now()
+    time = datetime.now()
     for u in users:
-        if time - u.lastRequest < datetime.timedelta(minutes=5):
+        print(f"{time}  {u.lastRequest}")
+        if time - u.lastRequest < timedelta(minutes=5):
             list_of_active_users.append(u.id)
-    return json. dumps(list_of_active_users)
+    return json.dumps(list_of_active_users)
 
 
 # username, password, name, surname, email
@@ -358,13 +364,14 @@ def recover_password():
 def confirm_code():
     data = request.json
     if "code" in data and "user" in data:
-        code = RestoreCodes.query.filter_by(data["code"]).order_by(RestoreCodes.timestamp.desc()).filter_by(user_id=data["user"]).filter_by(confirmed=False).all()
+        code = RestoreCodes.query.filter_by(data["code"]).order_by(RestoreCodes.timestamp.desc()).filter_by(
+            user_id=data["user"]).filter_by(confirmed=False).all()
         if len(code) == 0:
             return jsonify(
                 response=False
             )
         else:
-            #Bierzemy ostatni(zakładamy, że jest najwczesniejszy, czyli powinien być dobry)
+            # Bierzemy ostatni(zakładamy, że jest najwczesniejszy, czyli powinien być dobry)
             code = code[len(code) - 1]
             code.confirmed = True
             db.session.commit()
@@ -640,14 +647,14 @@ def send_group_message(chat_id):
         )
 
 
-@app.route('api/chat/<chat_id>')
+@app.route('/api/chat/<chat_id>')
 @login_required
 def get_chat_member(chat_id):
     u_id = current_user.get_id()
-    member = ChatMember.query.filter_by(groupchat_id=chat_id).filter_by(user_id=u_id).first()
+    member = ChatMember.query.filter((ChatMember.groupchat_id == chat_id) & (ChatMember.user_id == u_id)).first()
     return jsonify(
         user_id=member.user_id,
-        readtill=member.readTill
+        readtill=member.readtill
     )
 
 
@@ -666,10 +673,11 @@ def get_group_messages(chat_id, page):
 
         messages = db.session.query(GroupMessage).filter_by(groupchat_id=chat_id).order_by(
             GroupMessage.timestamp.desc()).filter_by(isDeleted=False).all()
-        u_id = current_user.get_id()
-        user = ChatMember.query.filter_by(groupchat_id=chat_id).filter_by(user_id=u_id).first()
-        user.readtill = datetime.now()
-        db.session.commit()
+        if page == 1:
+            u_id = current_user.get_id()
+            user = ChatMember.query.filter_by(groupchat_id=chat_id).filter_by(user_id=u_id).first()
+            user.readtill = datetime.now()
+            db.session.commit()
         return jsonify(
             [{
                 "id": message.id,

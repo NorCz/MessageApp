@@ -28,7 +28,7 @@ class ChatMember(db.Model):
     nickname = db.Column(db.String, unique=False, nullable=True, default=None)
     isAdmin = db.Column(db.Boolean, unique=False, nullable=False)
     isRemoved = db.Column(db.Boolean, unique=False, nullable=False, default=False)
-    readtill = db.Column(db.Datetime, unique=False, nullable=True, default=datetime.now)
+    readtill = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.now)
 
     groupchat = db.relationship('GroupChat')
     user = db.relationship('User')
