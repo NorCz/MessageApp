@@ -1,6 +1,8 @@
 # MessageApp - backend server
 The backend bundles and exposes the Frontend server during build, and uses a simple proxy mechanism to operate both servers on the same origin. Both internal and external communication from the servers is encrypted using a provided certificate.
 
+API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
+
 ## Manual building
 
 ### Required files:
