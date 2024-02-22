@@ -31,6 +31,7 @@ smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
 ### Proces budowy
 Uaktualnij lokalną kopię modułu Frontendu.
 ```bash
+git pull --recurse-submodules
 git submodule update --init --recursive
 ```
 
@@ -73,6 +74,7 @@ smtp_port=[Your password recovery email server SMTP port]
 ### Build process
 Make sure your Frontend submodule is up-to-date.
 ```bash
+git pull --recurse-submodules
 git submodule update --init --recursive
 ```
 
