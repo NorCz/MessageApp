@@ -29,5 +29,5 @@ RUN npm run build
 WORKDIR /
 RUN chown -R nobody /app/backend
 COPY docker_cmd_wrapper.sh /
-EXPOSE 3000
+EXPOSE $flask_port
 CMD ["bash", "./docker_cmd_wrapper.sh"]

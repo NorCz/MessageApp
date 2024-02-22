@@ -22,6 +22,7 @@ CORS(app, supports_credentials=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.secret_key = os.getenv('secret_key')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3)
+app.config['SESSION_COOKIE_SECURE'] = True
 
 db.init_app(app)
 
@@ -46,7 +47,7 @@ def unauthorised():
 
 @app.after_request
 def handle_options(response):
-    response.headers["Access-Control-Allow-Origin"] = "https://127.0.0.1:3000"
+    response.headers["Access-Control-Allow-Origin"] = f"https://${os.getenv('flask_address')}:{os.getenv('flask_port')}"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
     return response
