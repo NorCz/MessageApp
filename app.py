@@ -77,7 +77,7 @@ def get_logged_users():
     list_of_active_users = []
     time = datetime.datetime.now()
     for u in users:
-        if datetime.now() - u.lastRequest < datetime.timedelta(minutes=5):
+        if time - u.lastRequest < datetime.timedelta(minutes=5):
             list_of_active_users.append(u.id)
     return json. dumps(list_of_active_users)
 
@@ -447,7 +447,7 @@ def change_image():
 def get_image():
     u_id = current_user.get_id()
     user = User.query.filter_by(id=u_id).first()
-    response = make_response(user.image, 404)
+    response = make_response(user.image, 200)
     response.mimetype = "text/plain"
     return response
 
@@ -645,10 +645,21 @@ def send_group_message(chat_id):
         )
 
 
+@app.route('api/chat/<chat_id>')
+@login_required
+def get_chat_member(chat_id):
+    u_id = current_user.get_id()
+    member = ChatMember.query.filter_by(groupchat_id=chat_id).filter_by(user_id=u_id).first()
+    return jsonify(
+        user_id=member.user_id,
+        readtill=member.readTill
+    )
+
+
 @app.route('/api/chats/<chat_id>/<page>', methods=["GET"])
 @login_required
 def get_group_messages(chat_id, page):
-    if GroupChat.query.get(chat_id) and page.isdigit() and int(page) >= 0:
+    if GroupChat.query.get(chat_id) and page.isdigit() and int(page) >= 1:
         cur_member = db.session.query(ChatMember).filter_by(user_id=flask_login.current_user.id).join(
             GroupChat).filter_by(id=chat_id).first()
         if cur_member is None:
@@ -660,7 +671,10 @@ def get_group_messages(chat_id, page):
 
         messages = db.session.query(GroupMessage).filter_by(groupchat_id=chat_id).order_by(
             GroupMessage.timestamp.desc()).filter_by(isDeleted=False).all()
-
+        u_id = current_user.get_id()
+        user = ChatMember.query.filter_by(groupchat_id=chat_id).filter_by(user_id=u_id).first()
+        user.readtill = datetime.now()
+        db.session.commit()
         return jsonify(
             [{
                 "id": message.id,
