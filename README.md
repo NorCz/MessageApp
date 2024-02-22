@@ -32,7 +32,7 @@ smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
 Uaktualnij lokalną kopię modułu Frontendu.
 ```bash
 git pull --recurse-submodules
-git submodule update --init --recursive
+git submodule foreach git pull origin master
 ```
 
 Teraz możesz zbudować i uruchomić kontener Docker.
@@ -75,7 +75,7 @@ smtp_port=[Your password recovery email server SMTP port]
 Make sure your Frontend submodule is up-to-date.
 ```bash
 git pull --recurse-submodules
-git submodule update --init --recursive
+git submodule foreach git pull origin master
 ```
 
 Now, you can create and run the Docker container.
