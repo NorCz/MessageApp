@@ -47,7 +47,7 @@ def unauthorised():
 
 @app.after_request
 def handle_options(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:3000"
+    response.headers["Access-Control-Allow-Origin"] = "https://localhost:3000"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
     return response
