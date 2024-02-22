@@ -47,7 +47,8 @@ def unauthorised():
 
 @app.after_request
 def handle_options(response):
-    response.headers["Access-Control-Allow-Origin"] = f"https://${os.getenv('flask_address')}:{os.getenv('flask_port')}"
+    response.headers["Access-Control-Allow-Origin"] = f"https://{os.getenv('flask_address')}:{os.getenv('flask_port')}"
+    response.headers["Access-Control-Allow-Credentials"] = "True"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
     return response
