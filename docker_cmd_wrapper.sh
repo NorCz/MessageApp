@@ -1,5 +1,5 @@
 set -m
-source /app/backend/.env
+source /app/.env
 
 cd /app/frontend
 npx local-web-server \
