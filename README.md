@@ -5,7 +5,7 @@
 ### Required files:
 ```
 .env
-certs/messageapp.key
+certs/messageapp.crt
 certs/messageapp.key
 ```
 In a company setting, it is important that you use your own certificate for encrypting the HTTPS requests. The pre-built images are provided with a simple certificate for this purpose, but these can easily be changed by supplying your own in the `certs` folder and building the project.
