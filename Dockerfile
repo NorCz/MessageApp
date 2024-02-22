@@ -13,7 +13,6 @@ RUN apt-get install -y nodejs
 # Initialise Python Backend
 RUN pip install -r requirements.txt
 RUN pip install uwsgi -I --no-cache-dir
-COPY .env /app/
 COPY *.py /app/backend/
 COPY /certs/messageapp.crt /app/backend
 COPY /certs/messageapp.key /app/backend
@@ -24,10 +23,11 @@ WORKDIR /app/frontend
 RUN npm i
 RUN npm i local-web-server
 RUN npm run build
+COPY .env /app/frontend/build
 
 # Run wrapper script
 WORKDIR /
 RUN chown -R nobody /app/backend
 COPY docker_cmd_wrapper.sh /
-EXPOSE $flask_port
+EXPOSE $server_port
 CMD ["bash", "./docker_cmd_wrapper.sh"]

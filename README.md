@@ -20,8 +20,8 @@ W środowisku firmowym, zaleca się wykorzystać własny certyfikat w celu szyfr
 
 ### Format pliku `.env`
 ```env
-flask_address=[Adress wykorzystywany przez serwer Flask]
-flask_port=[Port wykorzystywany przez serwer Flask]
+server_address=[Adress wykorzystywany przez serwer Frontend]
+server_port=[Port wykorzystywany przez serwer Frontend]
 secret_key=[Klucz szyfrowania wykorzystywany przez serwer Flask]
 sender_email=[Konto pocztowe usługi odzyskiwania haseł]
 password=[Hasło konta pocztowego usługi odzyskiwania haseł]
@@ -62,8 +62,8 @@ In a company setting, it is recommended that you use your own certificate for en
 
 ### `.env` format
 ```env
-flask_address=[Address used by the Flask server]
-flask_port=[Port used by the flask server]
+server_address=[Address used by the Frontend server]
+server_port=[Port used by the Frontend server]
 secret_key=[Encryption key used by the Flask server]
 sender_email=[Your password recovery email account]
 password=[Your password recovery email password]

@@ -1,9 +1,9 @@
 set -m
-source /app/.env
+source /app/frontend/build/.env
 
 cd /app/frontend
 npx local-web-server \
-  --port $flask_port \
+  --port $server_port \
   --directory build \
   --spa index.html \
   --rewrite "/api/(.*) -> https://127.0.0.1:5000/api/$1" \
