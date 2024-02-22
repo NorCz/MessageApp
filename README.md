@@ -40,6 +40,10 @@ Teraz możesz zbudować i uruchomić kontener Docker.
 docker build -t messageapp:latest .
 docker run -d --env-file .env messageapp
 ```
+Jeśli ustawiasz w pliku `.env` inny adres serwera niż `127.0.0.1`, powinieneś przekierować port na niego w poleceniu, którym uruchamiasz kontener Docker:
+```bash
+docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
+```
 
 # [EN] MessageApp - Backend server
 The Backend bundles and exposes the Frontend server during build, and uses a simple proxy mechanism to operate both servers on the same origin. Both internal and external communication from the servers is encrypted using a provided certificate.
@@ -82,4 +86,8 @@ Now, you can create and run the Docker container.
 ```bash
 docker build -t messageapp:latest .
 docker run -d --env-file .env messageapp
+```
+If you're using a different server address from `127.0.0.1` in the `.env` file, you should also specify the forwarded port within the `run` command:
+```bash
+docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
