@@ -26,6 +26,7 @@ RUN npm run build
 
 # Run wrapper script
 WORKDIR /
+RUN chown -R nobody /app/backend
 COPY docker_cmd_wrapper.sh /
 EXPOSE 3000
 CMD ["bash", "./docker_cmd_wrapper.sh"]
