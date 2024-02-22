@@ -11,6 +11,11 @@ from flask_cors import CORS
 from db import db
 from models import *
 from send_email import send_email
+from waitress import serve
+import logging
+
+logger = logging.getLogger('waitress')
+logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -676,7 +681,7 @@ def get_group_messages(chat_id, page):
 
 
 if __name__ == '__main__':
-    app.run()
+    serve(app, listen='127.0.0.1:5000')
 
 # zrobione GET  /api/
 # zrobione POST /api/login
