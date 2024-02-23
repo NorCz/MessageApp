@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 # Initialise Ubuntu
 WORKDIR /
@@ -26,7 +26,9 @@ RUN npm run build
 
 # Run wrapper script
 WORKDIR /
-RUN chown -R nobody /app/backend
 COPY docker_cmd_wrapper.sh /
+RUN chown -R nobody /app/backend /app/frontend /docker_cmd_wrapper.sh
+
+USER nobody:nogroup
 EXPOSE $server_port
 CMD ["bash", "./docker_cmd_wrapper.sh"]

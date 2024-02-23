@@ -12,4 +12,4 @@ npx local-web-server \
   --log.format tiny &
 
 cd /app/backend
-uwsgi --master --https 127.0.0.1:5000,messageapp.crt,messageapp.key --uid nobody --gid nogroup -p 4 --wsgi-file app.py --callable app
+uwsgi --master --https 127.0.0.1:5000,messageapp.crt,messageapp.key -p 4 --wsgi-file app.py --callable app
