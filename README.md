@@ -1,5 +1,5 @@
 # [PL] MessageApp - serwer Backendu
-W procesie budowania Backend zawiera serwer Frontendu i wystawia go na komunikację, oraz wykorzystuje prosty mechanizm proxy aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
+W procesie budowania Backend pakuje serwer Frontendu i wystawia go na komunikację, oraz wykorzystuje prosty mechanizm proxy aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
