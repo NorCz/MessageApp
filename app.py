@@ -305,7 +305,7 @@ def send_message(user_id):
 @app.route('/api/user/<user_id>/<page>', methods=["GET"])
 @login_required
 def private_messages(user_id, page):
-    if User.query.get(user_id) and page.isdigit() and int(page) >= 0:
+    if User.query.get(user_id) and page.isdigit() and int(page) >= 1:
         u_id = current_user.get_id()
         messages = PrivateMessage.query.filter(
             PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id))).filter_by(
@@ -316,6 +316,7 @@ def private_messages(user_id, page):
                 list_of_messages_between_users.append(
                     {"message_id": i.id, "from": i.from_id, "to": i.to_id, "content": i.content,
                      "timestamp": i.timestamp, "attachment": i.attachment})
+        list_of_messages_between_users.reverse()
         list_of_messages_between_users = list_of_messages_between_users[(int(page) - 1) * 30: int(page) * 30]
         return json.dumps(list_of_messages_between_users, default=str)
     else:
