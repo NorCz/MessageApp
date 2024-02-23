@@ -48,7 +48,7 @@ Uaktualnij lokalną kopię modułu Frontendu.
 ```bash
 git submodule foreach git pull origin master
 ```
-Teraz możesz zbudować i kontener Docker.
+Teraz możesz zbudować i [uruchomić](#uruchamianie) kontener Docker.
 ```bash
 docker build -t messageapp:latest .
 ```
