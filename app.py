@@ -85,7 +85,16 @@ def get_logged_users():
         print(f"{time}  {u.lastRequest}")
         if time - u.lastRequest < timedelta(minutes=5):
             list_of_active_users.append(u.id)
-    return json.dumps(list_of_active_users)
+    return make_response(json.dumps(list_of_active_users), 200)
+
+
+@app.route('/api/is_user_logged/<user_id>', methods=["GET"])
+def is_user_logged(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if datetime.now() - user.lastRequest < timedelta(minutes=5):
+        return make_response(jsonify(response=True), 200)
+    else:
+        return make_response(jsonify(response=False), 200)
 
 
 # username, password, name, surname, email
