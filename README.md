@@ -9,7 +9,7 @@ Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/Mes
 * [Docker](https://www.docker.com/products/docker-desktop/), lub inne oprogramowanie lub usługa zdolna do uruchamiania kontenerów Docker.
 
 ## Uruchamianie
-Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker.
+Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker. Można to zrobić z wiersza poleceń, lub poprzez inne oprogramowanie czy usługi takie jak [Docker Desktop](https://www.docker.com/products/docker-desktop/) lub Amazon Web Services.
 ```bash
 docker run -d --env-file .env messageapp
 ```
