@@ -1,5 +1,7 @@
-# [PL] MessageApp - serwer Backendu
-W procesie budowania Backend pakuje serwer Frontendu i wystawia go na komunikację, oraz wykorzystuje prosty mechanizm proxy aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
+# [PL] MessageApp - serwer Backend
+W procesie budowania Backend pakuje serwer Frontend i wystawia go na komunikację, oraz wykorzystuje prosty mechanizm proxy aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
+
+Serwer Frontend jest budawiony poprzez react-scripts i wystawiany na [local-web-server](https://github.com/lwsjs/local-web-server). Serwer Backend jest uruchamiany poprzez serwer [uWSGI](https://github.com/unbit/uwsgi).
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
@@ -38,13 +40,14 @@ sender_email=[Konto pocztowe usługi odzyskiwania haseł]
 password=[Hasło konta pocztowego usługi odzyskiwania haseł]
 smtp_server=[Adres serwera pocztowego usługi odzyskiwania haseł]
 smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
+uwsgi_worker_count=[Ilość wątków/procesów wykorzystywana przez serwer Backend]
 ```
 ### Proces budowy
 Sklonuj lub pobierz to repozytorium.
 ```bash
 git clone --recurse-submodules https://github.com/NorCz/MessageApp.git
 ```
-Uaktualnij lokalną kopię modułu Frontendu.
+Uaktualnij lokalną kopię modułu Frontend.
 ```bash
 git submodule foreach git pull origin master
 ```
@@ -55,6 +58,8 @@ docker build -t messageapp:latest .
 
 # [EN] MessageApp - Backend server
 The Backend bundles and exposes the Frontend server during build, and uses a simple proxy mechanism to operate both servers on the same origin. Both internal and external communication from the servers is encrypted using a provided certificate.
+
+The Frontend server uses react-scripts for building and is served with [local-web-server](https://github.com/lwsjs/local-web-server). The backend server is ran through [uWSGI](https://github.com/unbit/uwsgi).
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
@@ -93,6 +98,7 @@ sender_email=[Your password recovery email account]
 password=[Your password recovery email password]
 smtp_server=[Your password recovery email server address]
 smtp_port=[Your password recovery email server SMTP port]
+uwsgi_worker_count=[Worker/process count used by the Backend server]
 ```
 
 ### Build process
