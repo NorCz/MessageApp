@@ -3,5 +3,6 @@ Flask_Cors==4.0.0
 Flask_Login==0.6.3
 flask_sqlalchemy==3.1.1
 SQLAlchemy==2.0.27
-waitress==3.0.0
 bcrypt==4.1.2
+python-dotenv==1.0.1
+cryptography==42.0.2

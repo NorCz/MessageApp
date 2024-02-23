@@ -1,3 +1,4 @@
+import os
 import datetime
 from datetime import timedelta
 import json
@@ -11,18 +12,17 @@ from flask_cors import CORS
 from db import db
 from models import *
 from send_email import send_email
-from waitress import serve
-import logging
+from dotenv import load_dotenv
 
-logger = logging.getLogger('waitress')
-logger.setLevel(logging.INFO)
+load_dotenv('.env', verbose=True, override=True)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-app.secret_key = "zse4%RDX"
+app.secret_key = os.getenv('secret_key')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3)
+app.config['SESSION_COOKIE_SECURE'] = True
 
 db.init_app(app)
 
@@ -47,7 +47,8 @@ def unauthorised():
 
 @app.after_request
 def handle_options(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:3000"
+    response.headers["Access-Control-Allow-Origin"] = f"https://127.0.0.1:{os.getenv('server_port')}"
+    response.headers["Access-Control-Allow-Credentials"] = "True"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
     return response
@@ -712,7 +713,7 @@ def get_group_messages(chat_id, page):
 
 
 if __name__ == '__main__':
-    serve(app, listen='127.0.0.1:5000')
+    app.run(ssl_context="adhoc")
 
 # zrobione GET  /api/
 # zrobione POST /api/login

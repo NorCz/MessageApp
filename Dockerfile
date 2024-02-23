@@ -1,21 +1,34 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.11 AS backend
+FROM ubuntu:22.04
+
+# Initialise Ubuntu
 WORKDIR /
 COPY requirements.txt .
-RUN pip install -r requirements.txt
-ARG FLASK_APP=app.py
-COPY *.py /app/backend/
-WORKDIR /app/backend/
-CMD ["python", "app.py"]
+RUN apt-get -y update && apt-get -y install python3.11 pip curl libpcre3 libssl-dev
+RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && apt-get install -y nodejs
 
-FROM node:hydrogen-slim
+# Initialise Python Backend
+RUN pip install -r requirements.txt
+RUN pip install uwsgi -I --no-cache-dir
+COPY /.env /app/backend/
+COPY *.py /app/backend/
+COPY /certs/messageapp.crt /app/backend
+COPY /certs/messageapp.key /app/backend
+
+# Initialise React Frontend
 COPY /frontend /app/frontend
+COPY .env /app/frontend/src
 WORKDIR /app/frontend
 RUN npm i
-RUN npm install -g serve
+RUN npm i local-web-server
 RUN npm run build
-WORKDIR /app/frontend/
-COPY --from=backend /app/backend /app/backend
-CMD ["serve", "-s", "build"]
-EXPOSE 3000
+
+# Run wrapper script
+WORKDIR /
+COPY docker_cmd_wrapper.sh /
+RUN chown -R nobody /app/backend /app/frontend /docker_cmd_wrapper.sh
+
+USER nobody:nogroup
+EXPOSE $server_port
+CMD ["bash", "./docker_cmd_wrapper.sh"]
