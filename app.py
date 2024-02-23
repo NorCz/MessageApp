@@ -279,7 +279,6 @@ def user_read_private_message():
         )
 
 
-
 @app.route('/api/userlist', methods=["GET"])
 @login_required
 def userlist():
@@ -364,6 +363,14 @@ def private_messages(user_id, page):
         messages = PrivateMessage.query.filter(
             PrivateMessage.from_id.in_((u_id, user_id)) & PrivateMessage.to_id.in_((u_id, user_id))).filter_by(
             isDeleted=False)
+        if page == 1:
+            conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=user_id).first()
+            if conv is not None:
+                conv.readTill = datetime.now()
+                db.session.commit()
+            else:
+                conv = PrivateMessagesRead(from_user_id=u_id, to_user_id=user_id)
+                db.session.add(conv)
         list_of_messages_between_users = []
         for i in messages:
             if not i.isDeleted:
