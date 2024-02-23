@@ -10,7 +10,7 @@ Baza danych wykorzystuje silnik [SQLite3](https://www.sqlite.org/).
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
-### Wymagiania
+### Wymagania
 * [Docker](https://www.docker.com/products/docker-desktop/), lub inne oprogramowanie lub usługa zdolna do uruchamiania kontenerów Docker.
 
 ## Uruchamianie
