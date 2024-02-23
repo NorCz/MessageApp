@@ -1,7 +1,7 @@
 # [PL] MessageApp - serwer Backend
 W procesie budowania Backend pakuje serwer Frontend i wystawia go na komunikację, oraz wykorzystuje prosty mechanizm proxy aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
 
-Serwer Frontend jest budawiony poprzez react-scripts i wystawiany na [local-web-server](https://github.com/lwsjs/local-web-server). Serwer Backend jest uruchamiany poprzez serwer [uWSGI](https://github.com/unbit/uwsgi).
+Serwer Frontend jest budawiony poprzez react-scripts i wystawiany na [local-web-server](https://github.com/lwsjs/local-web-server). Serwer Backend jest uruchamiany poprzez serwer [uWSGI](https://github.com/unbit/uwsgi). Wszystkie procesy serwera są uruchamiane jako użytkownik `nobody` w celach bezpieczeństwa.
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
@@ -59,7 +59,7 @@ docker build -t messageapp:latest .
 # [EN] MessageApp - Backend server
 The Backend bundles and exposes the Frontend server during build, and uses a simple proxy mechanism to operate both servers on the same origin. Both internal and external communication from the servers is encrypted using a provided certificate.
 
-The Frontend server uses react-scripts for building and is served with [local-web-server](https://github.com/lwsjs/local-web-server). The backend server is ran through [uWSGI](https://github.com/unbit/uwsgi).
+The Frontend server uses react-scripts for building and is served with [local-web-server](https://github.com/lwsjs/local-web-server). The backend server is run through [uWSGI](https://github.com/unbit/uwsgi). All the server processes are run as the `nobody` user for safety.
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
