@@ -25,7 +25,7 @@ server_port=[Port wykorzystywany przez serwer Frontend]
 secret_key=[Klucz szyfrowania wykorzystywany przez serwer Flask]
 sender_email=[Konto pocztowe usługi odzyskiwania haseł]
 password=[Hasło konta pocztowego usługi odzyskiwania haseł]
-smtp_server=[Serwer pocztowy usługi odzyskiwania haseł]
+smtp_server=[Adres serwera pocztowego usługi odzyskiwania haseł]
 smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
 ```
 ### Proces budowy
@@ -72,7 +72,7 @@ server_port=[Port used by the Frontend server]
 secret_key=[Encryption key used by the Flask server]
 sender_email=[Your password recovery email account]
 password=[Your password recovery email password]
-smtp_server=[Your password recovery email server]
+smtp_server=[Your password recovery email server address]
 smtp_port=[Your password recovery email server SMTP port]
 ```
 ### Build process
