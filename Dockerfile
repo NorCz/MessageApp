@@ -5,10 +5,8 @@ FROM ubuntu:latest
 # Initialise Ubuntu
 WORKDIR /
 COPY requirements.txt .
-RUN apt-get -y update
-RUN apt-get -y install python3.11 pip curl libpcre3 libssl-dev
-RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get -y update && apt-get -y install python3.11 pip curl libpcre3 libssl-dev
+RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && apt-get install -y nodejs
 
 # Initialise Python Backend
 RUN pip install -r requirements.txt
