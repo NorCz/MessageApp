@@ -35,9 +35,14 @@ git pull --recurse-submodules
 git submodule foreach git pull origin master
 ```
 
-Teraz możesz zbudować i uruchomić kontener Docker.
+Teraz możesz zbudować i kontener Docker.
 ```bash
 docker build -t messageapp:latest .
+```
+
+### Uruchamianie
+Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker.
+```bash
 docker run -d --env-file .env messageapp
 ```
 Jeśli ustawiasz w pliku `.env` inny adres serwera niż `127.0.0.1`, powinieneś przekierować port na niego w poleceniu, którym uruchamiasz kontener Docker:
