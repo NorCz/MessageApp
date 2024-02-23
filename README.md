@@ -8,6 +8,16 @@ Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/Mes
 ## Wymagiania
 * [Docker](https://www.docker.com/products/docker-desktop/), lub inne oprogramowanie lub usługa zdolna do uruchamiania kontenerów Docker.
 
+## Uruchamianie
+Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker.
+```bash
+docker run -d --env-file .env messageapp
+```
+Jeśli ustawiasz w pliku `.env` inny adres serwera niż `127.0.0.1`, powinieneś przekierować port na niego w poleceniu, którym uruchamiasz kontener Docker:
+```bash
+docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
+```
+
 ## Budowa manualna
 
 ### Wymagane pliki:
@@ -38,16 +48,6 @@ git submodule foreach git pull origin master
 Teraz możesz zbudować i kontener Docker.
 ```bash
 docker build -t messageapp:latest .
-```
-
-## Uruchamianie
-Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker.
-```bash
-docker run -d --env-file .env messageapp
-```
-Jeśli ustawiasz w pliku `.env` inny adres serwera niż `127.0.0.1`, powinieneś przekierować port na niego w poleceniu, którym uruchamiasz kontener Docker:
-```bash
-docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
 
 # [EN] MessageApp - Backend server
