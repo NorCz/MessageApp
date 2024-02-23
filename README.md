@@ -17,7 +17,7 @@ Jeśli ustawiasz w pliku `.env` inny adres serwera niż `127.0.0.1`, powinieneś
 ```bash
 docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
-Serwer jest teraz dostępny pod adresem `https://[server_address]:[port]` (default/prebuilt: `https://127.0.0.1:3000`).
+Serwer jest teraz dostępny pod adresem `https://[server_address]:[server_port]` (default/prebuilt: `https://127.0.0.1:3000`).
 
 ## Budowa manualna
 
@@ -72,7 +72,7 @@ If you're using a different server address from `127.0.0.1` in the `.env` file, 
 ```bash
 docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
-The server is now available at `https://[server_address]:[port]` (default/prebuilt: `https://127.0.0.1:3000`).
+The server is now available at `https://[server_address]:[server_port]` (default/prebuilt: `https://127.0.0.1:3000`).
 
 ## Manual building
 
