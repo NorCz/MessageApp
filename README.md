@@ -61,7 +61,7 @@ Prebuilt images can also be downloaded from the [Releases](https://github.com/No
 * [Docker](https://www.docker.com/products/docker-desktop/), or other software or service capable of running Docker containers.
 
 ## Usage
-Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker. Można to zrobić z wiersza poleceń, lub poprzez inne oprogramowanie czy usługi takie jak [Docker Desktop](https://www.docker.com/products/docker-desktop/) lub Amazon Web Services.
+You can start the server by running the Docker image. This can be done either from the terminal, or by using another software or service such as [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Amazon Web Services.
 ```bash
 docker run -d --env-file .env messageapp
 ```
