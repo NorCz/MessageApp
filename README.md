@@ -60,6 +60,16 @@ Prebuilt images can also be downloaded from the [Releases](https://github.com/No
 ## Requirements
 * [Docker](https://www.docker.com/products/docker-desktop/), or other software or service capable of running Docker containers.
 
+## Usage
+Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker. Można to zrobić z wiersza poleceń, lub poprzez inne oprogramowanie czy usługi takie jak [Docker Desktop](https://www.docker.com/products/docker-desktop/) lub Amazon Web Services.
+```bash
+docker run -d --env-file .env messageapp
+```
+If you're using a different server address from `127.0.0.1` in the `.env` file, you should also specify the forwarded port within the `run` command:
+```bash
+docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
+```
+
 ## Manual building
 
 ### Required files:
@@ -80,6 +90,7 @@ password=[Your password recovery email password]
 smtp_server=[Your password recovery email server address]
 smtp_port=[Your password recovery email server SMTP port]
 ```
+
 ### Build process
 Make sure your Frontend submodule is up-to-date.
 ```bash
@@ -90,9 +101,4 @@ git submodule foreach git pull origin master
 Now, you can create and run the Docker container.
 ```bash
 docker build -t messageapp:latest .
-docker run -d --env-file .env messageapp
-```
-If you're using a different server address from `127.0.0.1` in the `.env` file, you should also specify the forwarded port within the `run` command:
-```bash
-docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
