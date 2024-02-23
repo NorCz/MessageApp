@@ -1,13 +1,16 @@
 # [PL] MessageApp - serwer Backend
 W procesie budowania Backend pakuje serwer Frontend i wystawia go na komunikację, oraz wykorzystuje prosty mechanizm proxy aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
 
-Serwer Frontend jest budawiony poprzez react-scripts i wystawiany na [local-web-server](https://github.com/lwsjs/local-web-server). Serwer Backend jest uruchamiany poprzez serwer [uWSGI](https://github.com/unbit/uwsgi). Wszystkie procesy serwera są uruchamiane jako użytkownik `nobody` w celach bezpieczeństwa.
+Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/MessageApp/releases), lub bezpośrednio z [repozytorium Docker](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
+
+## Specyfikacja
+Serwer Frontend działa w technologii [React](https://react.dev/), jest budowany poprzez react-scripts i wystawiany na [local-web-server](https://github.com/lwsjs/local-web-server). Serwer Backend działa w technologii [Flask](https://flask.palletsprojects.com/en/3.0.x/) z użyciem silnika [SQLAlchemy](https://www.sqlalchemy.org/) w celu połączenia z bazą danych i jest uruchamiany poprzez serwer [uWSGI](https://github.com/unbit/uwsgi). Wszystkie procesy serwera są uruchamiane jako użytkownik `nobody` w celach bezpieczeństwa.
+
+Baza danych wykorzystuje silnik [SQLite3](https://www.sqlite.org/).
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
-Gotowe obrazy można pobrać z zakładki [Releases](https://github.com/NorCz/MessageApp/releases), lub bezpośrednio z [repozytorium Docker](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
-
-## Wymagiania
+### Wymagiania
 * [Docker](https://www.docker.com/products/docker-desktop/), lub inne oprogramowanie lub usługa zdolna do uruchamiania kontenerów Docker.
 
 ## Uruchamianie
@@ -59,13 +62,14 @@ docker build -t messageapp:latest .
 # [EN] MessageApp - Backend server
 The Backend bundles and exposes the Frontend server during build, and uses a simple proxy mechanism to operate both servers on the same origin. Both internal and external communication from the servers is encrypted using a provided certificate.
 
-The Frontend server uses react-scripts for building and is served with [local-web-server](https://github.com/lwsjs/local-web-server). The backend server is run through [uWSGI](https://github.com/unbit/uwsgi). All the server processes are run as the `nobody` user for safety.
+Prebuilt images can also be downloaded from the [Releases](https://github.com/NorCz/MessageApp/releases) tab, or directly from the [Docker repository](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
+
+## Specification
+The Frontend server is based on the [React](https://react.dev/) framework, uses react-scripts for building, and is served with [local-web-server](https://github.com/lwsjs/local-web-server). The Backend server is based on the [Flask](https://flask.palletsprojects.com/en/) framework, uses the [SQLAlchemy](https://www.sqlalchemy.org/) engine for managing a database connection, and is run through [uWSGI](https://github.com/unbit/uwsgi). All the server processes are run as the `nobody` user for safety.
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
-Prebuilt images can also be downloaded from the [Releases](https://github.com/NorCz/MessageApp/releases) tab, or directly from the [Docker repository](https://hub.docker.com/repository/docker/nekuskus/messageapp/general).
-
-## Requirements
+### Requirements
 * [Docker](https://www.docker.com/products/docker-desktop/), or other software or service capable of running Docker containers.
 
 ## Usage
