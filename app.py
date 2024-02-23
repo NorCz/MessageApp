@@ -251,11 +251,11 @@ def private_messages_read(to_user):
 @login_required
 def user_read_private_message():
     data = request.json
-    if "to_user" in data:
+    if "to_user" in data and "date":
         u_id = int(current_user.get_id())
         conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=data["to_user"]).first()
         if conv is not None:
-            conv.readTill = datetime.now()
+            conv.readTill = data["date"]
             db.session.commit()
             return make_response(
                 jsonify(
