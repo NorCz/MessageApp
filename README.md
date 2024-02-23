@@ -40,7 +40,7 @@ Teraz możesz zbudować i kontener Docker.
 docker build -t messageapp:latest .
 ```
 
-### Uruchamianie
+## Uruchamianie
 Aby uruchomić usługę serwera należy uruchomić zbudowany lub pobrany kontener Docker.
 ```bash
 docker run -d --env-file .env messageapp
