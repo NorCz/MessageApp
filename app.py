@@ -255,7 +255,11 @@ def user_read_private_message():
         u_id = int(current_user.get_id())
         conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=data["to_user"]).first()
         if conv is not None:
-            conv.readTill = datetime.now()
+            if "date" in data:
+                converted_date = datetime.fromtimestamp(int(data["date"])/1000)
+                conv.readTill = converted_date
+            else:
+                conv.readTill = datetime.now()
             db.session.commit()
             return make_response(
                 jsonify(

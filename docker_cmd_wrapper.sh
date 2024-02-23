@@ -2,7 +2,7 @@ set -m
 source /app/frontend/src/.env
 
 cd /app/frontend
-npx local-web-server \
+ws \
   --port $server_port \
   --directory build \
   --spa index.html \

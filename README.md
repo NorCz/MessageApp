@@ -57,7 +57,7 @@ git submodule update --remote --merge
 ```
 Teraz możesz zbudować i [uruchomić](#uruchamianie) kontener Docker.
 ```bash
-docker build -t messageapp:latest .
+docker build -t nekuskus/messageapp:latest .
 ```
 
 # [EN] MessageApp - Backend server
@@ -118,5 +118,5 @@ git submodule update --remote --merge
 ```
 Now, you can build and [run](#usage) the Docker container.
 ```bash
-docker build -t messageapp:latest .
+docker build -t nekuskus/messageapp:latest .
 ```
