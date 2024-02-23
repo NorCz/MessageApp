@@ -67,7 +67,16 @@ class PrivateMessage(db.Model):
     attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
 
 
+class PrivateMessagesRead(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    from_user_id = db.Column(db.Integer, unique=False, nullable=False)
+    to_user_id = db.Column(db.Integer, unique=False, nullable=False)
+    readTill = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
+
+
 class RestoreCodes(db.Model):
+    __tablename__ = 'restorecodes'
+
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     user_id = db.Column(db.Integer, unique=False, nullable=False)
     code = db.Column(db.String, unique=False, nullable=False)
