@@ -40,12 +40,14 @@ smtp_server=[Adres serwera pocztowego usługi odzyskiwania haseł]
 smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
 ```
 ### Proces budowy
+Sklonuj lub pobierz to repozytorium.
+```bash
+git clone --recurse-submodules https://github.com/NorCz/MessageApp.git
+```
 Uaktualnij lokalną kopię modułu Frontendu.
 ```bash
-git pull --recurse-submodules
 git submodule foreach git pull origin master
 ```
-
 Teraz możesz zbudować i kontener Docker.
 ```bash
 docker build -t messageapp:latest .
@@ -94,13 +96,15 @@ smtp_port=[Your password recovery email server SMTP port]
 ```
 
 ### Build process
+First, clone or download this repository.
+```bash
+git clone --recurse-submodules https://github.com/NorCz/MessageApp.git
+```
 Make sure your Frontend submodule is up-to-date.
 ```bash
-git pull --recurse-submodules
 git submodule foreach git pull origin master
 ```
-
-Now, you can create and run the Docker container.
+Now, you can build and [run](#usage) the Docker container.
 ```bash
 docker build -t messageapp:latest .
 ```
