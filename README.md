@@ -32,7 +32,7 @@ Serwer Frontend jest teraz dostępny pod adresem `https://[server_address]:[serv
 
 Bezpośrednie zarządzanie serwerem Backend możliwe jest poprzez kolejkę serwera dostępną w kontenerze pod ścieżką `/app/backend/uwsgi-fifo`. Dokumentacja tego interfejsu dostępna w [dokumentacji uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/MasterFIFO.html). W szczególności ważne jest tutaj polecenie `q`, które pozwala bezpiecznie zakończyć działanie serwera. Aby uzyskać dostęp do linii komend kontenera, można wykorzystać poniższe polecenie.
 ```bash
-docker exec -it [nazwa_kontenera] bash
+docker exec -u 0 -it [nazwa_kontenera] bash
 ```
 
 ## Budowa manualna
@@ -104,7 +104,7 @@ The Frontend server is now available at `https://[server_address]:[server_port]`
 
 Direct management of the Backend server is possible through the server queue available in the container as `/app/backend/uwsgi-fifo`. This interface is described in the [uWSGI documentation](https://uwsgi-docs.readthedocs.io/en/latest/MasterFIFO.html). The command `q` is particularly important here, as it allows for gracefully shutting down the server instances. You can use the following command to access the server command-line.
 ```bash
-docker exec -it [container_name] bash
+docker exec -u 0 -it [container_name] bash
 ```
 
 ## Manual building
