@@ -313,6 +313,7 @@ def private_messages_read(to_user):
                 )
 
 
+@app.route('/api/userlist', methods=["GET"], defaults={'page': 1})
 @app.route('/api/userlist/<page>', methods=["GET"])
 @login_required
 def userlist(page=1):
@@ -391,7 +392,7 @@ def send_message(user_id):
 
 @app.route('/api/user/<user_id>/<page>', methods=["GET"])
 @login_required
-def private_messages(user_id, page=1):
+def private_messages(user_id, page):
     if User.query.get(user_id) and page.isdigit() and int(page) >= 1:
         u_id = current_user.get_id()
         messages = PrivateMessage.query.filter(
