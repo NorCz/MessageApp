@@ -305,7 +305,7 @@ def private_messages_read(to_user):
                     ), 200
                 )
             else:
-                conv = PrivateMessagesRead(from_user_id=u_id, to_user_id=data["to_user"])
+                conv = PrivateMessagesRead(from_user_id=u_id, to_user_id=to_user, readTill=str(0))
                 db.session.add(conv)
                 db.session.commit()
                 return make_response(

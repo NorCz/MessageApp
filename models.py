@@ -68,6 +68,7 @@ class PrivateMessage(db.Model):
 
 
 class PrivateMessagesRead(db.Model):
+    __tablename__ = 'privatemessagesread'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     from_user_id = db.Column(db.Integer, unique=False, nullable=False)
     to_user_id = db.Column(db.Integer, unique=False, nullable=False)
