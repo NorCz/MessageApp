@@ -530,9 +530,13 @@ def change_image():
 def get_image():
     u_id = current_user.get_id()
     user = User.query.filter_by(id=u_id).first()
-    response = make_response(user.image, 200)
-    response.mimetype = "text/plain"
-    return response
+    return make_response(
+        jsonify(
+            response="true",
+            image=user.image
+        ),
+        200
+    )
 
 
 # Chaty
