@@ -255,59 +255,62 @@ def get_user(user_id):
     )
 
 
-@app.route('/api/private_messages/read_till/<to_user>', methods=["GET"])
+@app.route('/api/private_messages/read_till/<to_user>', methods=["GET", "POST"])
 @login_required
 def private_messages_read(to_user):
     u_id = int(current_user.get_id())
     conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=to_user).first()
-    if conv is not None:
-        return make_response(
-            jsonify(
-                logged_user=u_id,
-                to_id=conv.to_user_id,
-                read_till=int(conv.readTill)
-            ), 200
-        )
-    else:
-        return make_response(
-            jsonify(
-                response=False
-            ), 404
-        )
+
+    if request.method == "GET":
+        if conv is not None:
+            return make_response(
+                jsonify(
+                    logged_user=u_id,
+                    to_id=conv.to_user_id,
+                    read_till=int(conv.readTill)
+                ), 200
+            )
+        else:
+            return make_response(
+                jsonify(
+                    response=False
+                ), 404
+            )
+    elif request.method == "POST":
+        data = request.json
+        with app.app_context():
+            if conv is not None:
+                if "date" in data:
+                    converted_date = str(data["date"])
+                    conv.readTill = converted_date
+                else:
+                    return make_response(
+                        jsonify(
+                            response=False
+                        ),
+                        400
+                    )
+                db.session.commit()
+                return make_response(
+                    jsonify(
+                        response=True
+                    ), 200
+                )
+            else:
+                conv = PrivateMessagesRead(from_user_id=u_id, to_user_id=data["to_user"])
+                db.session.add(conv)
+                db.session.commit()
+                return make_response(
+                    jsonify(
+                        response=True
+                    ), 200
+                )
+
 
 
 @app.route('/api/private_messages/read_till', methods=["POST"])
 @login_required
 def user_read_private_message():
-    data = request.json
-    if "to_user" in data:
-        u_id = int(current_user.get_id())
-        conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=data["to_user"]).first()
-        if conv is not None:
-            converted_date = str(data["date"])
-            conv.readTill = converted_date
-            db.session.commit()
-            return make_response(
-                jsonify(
-                    response=True
-                ), 200
-            )
-        else:
-            conv = PrivateMessagesRead(from_user_id=u_id, to_user_id=data["to_user"])
-            db.session.add(conv)
-            db.session.commit()
-            return make_response(
-                jsonify(
-                    response=True
-                ), 200
-            )
-    else:
-        return make_response(
-            jsonify(
-                response=False
-            ), 404
-        )
-
 
 @app.route('/api/userlist', methods=["GET"])
 @login_required
