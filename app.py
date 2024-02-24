@@ -110,6 +110,20 @@ def register():
                 ),
                 400
             )
+        if User.query.filter_by(username=data["username"]).first() is not None:
+            return make_response(
+                jsonify(
+                    response="Username already exists"
+                ),
+                409
+            )
+        if User.query.filter_by(email=data["email"]).first() is not None:
+            return make_response(
+                jsonify(
+                    response="Email already exists"
+                ),
+                409
+            )
         cipher_data = hash_password(data["password"])
         with app.app_context():
             user = User(
