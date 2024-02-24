@@ -313,11 +313,6 @@ def private_messages_read(to_user):
                 )
 
 
-
-@app.route('/api/private_messages/read_till', methods=["POST"])
-@login_required
-def user_read_private_message():
-
 @app.route('/api/userlist/<page>', methods=["GET"])
 @login_required
 def userlist(page=1):
