@@ -336,7 +336,6 @@ def userlist(page):
         User.username.ilike(f"%{search_str}%") |
         User.name.concat(" ").concat(User.surname).ilike(f"%{search_str}%")
     ).paginate(page=int(page), per_page=30).items
-    print(list_of_users)
     json_of_users = {}
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
