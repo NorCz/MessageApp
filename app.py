@@ -259,6 +259,12 @@ def get_user(user_id):
 @login_required
 def private_messages_read(to_user):
     u_id = int(current_user.get_id())
+    if User.query.filter_by(id=to_user).first() is None:
+        return make_response(
+            jsonify(
+                response=False
+            ), 404
+        )
     conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=to_user).first()
 
     if request.method == "GET":
