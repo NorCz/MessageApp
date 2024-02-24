@@ -286,33 +286,36 @@ def private_messages_read(to_user):
             )
     elif request.method == "POST":
         data = request.json
-        with app.app_context():
-            if conv is not None:
-                if "date" in data:
+        if conv is not None:
+            if "date" in data:
+                with app.app_context():
                     converted_date = str(data["date"])
-                    conv.readTill = converted_date
-                else:
+                    print('Conv found')
+                    db.session.query(PrivateMessagesRead).filter_by(id=conv.id).update({'readTill:': converted_date})
+                    db.session.commit()
                     return make_response(
                         jsonify(
-                            response=False
-                        ),
-                        400
+                            response=True
+                        ), 200
                     )
-                db.session.commit()
+            else:
                 return make_response(
                     jsonify(
-                        response=True
-                    ), 200
+                        response=False
+                    ),
+                    400
                 )
-            else:
+        else:
+            with app.app_context():
+                print('Conv not found')
                 conv = PrivateMessagesRead(from_user_id=u_id, to_user_id=to_user, readTill=str(0))
                 db.session.add(conv)
                 db.session.commit()
-                return make_response(
-                    jsonify(
-                        response=True
-                    ), 200
-                )
+            return make_response(
+                jsonify(
+                    response=True
+                ), 200
+            )
 
 
 @app.route('/api/userlist', methods=["GET"], defaults={'page': 1})
