@@ -318,10 +318,10 @@ def private_messages_read(to_user):
 @login_required
 def user_read_private_message():
 
-@app.route('/api/userlist', methods=["GET"])
+@app.route('/api/userlist/<page>', methods=["GET"])
 @login_required
-def userlist():
-    list_of_users = User.query.all()
+def userlist(page=1):
+    list_of_users = User.query.paginate(page=page, per_page=30).items
     json_of_users = {}
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
