@@ -2,7 +2,7 @@ set -m
 source /app/frontend/src/.env
 
 cd /app/frontend
-npx local-web-server \
+ws \
   --port $server_port \
   --directory build \
   --spa index.html \
@@ -12,4 +12,4 @@ npx local-web-server \
   --log.format tiny &
 
 cd /app/backend
-uwsgi --master --https 127.0.0.1:5000,messageapp.crt,messageapp.key -p $uwsgi_worker_count --wsgi-file app.py --callable app
+uwsgi --master --https 127.0.0.1:5000,messageapp.crt,messageapp.key -p $uwsgi_worker_count --enable-threads --wsgi-file app.py --callable app

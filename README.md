@@ -52,11 +52,12 @@ git clone --recurse-submodules https://github.com/NorCz/MessageApp.git
 ```
 Uaktualnij lokalną kopię modułu Frontend.
 ```bash
-git submodule foreach git pull origin master
+git pull --recurse-submodules
+git submodule update --remote --merge
 ```
 Teraz możesz zbudować i [uruchomić](#uruchamianie) kontener Docker.
 ```bash
-docker build -t messageapp:latest .
+docker build -t nekuskus/messageapp:latest .
 ```
 
 # [EN] MessageApp - Backend server
@@ -112,9 +113,10 @@ git clone --recurse-submodules https://github.com/NorCz/MessageApp.git
 ```
 Make sure your Frontend submodule is up-to-date.
 ```bash
-git submodule foreach git pull origin master
+git pull --recurse-submodules
+git submodule update --remote --merge
 ```
 Now, you can build and [run](#usage) the Docker container.
 ```bash
-docker build -t messageapp:latest .
+docker build -t nekuskus/messageapp:latest .
 ```
