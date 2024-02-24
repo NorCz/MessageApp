@@ -28,7 +28,12 @@ RUN npm run build
 # Run wrapper script
 WORKDIR /
 COPY --chown=nobody:nogroup docker_cmd_wrapper.sh /
-USER nobody:nogroup
 
+# Symlink instance folder for smaller volume syntax in command
+RUN mkdir /instance
+RUN chown nobody:nogroup /instance
+RUN ln -sf /instance /app/backend/instance
+
+USER nobody:nogroup
 EXPOSE $server_port
 CMD ["bash", "./docker_cmd_wrapper.sh"]

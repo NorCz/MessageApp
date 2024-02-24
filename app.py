@@ -15,6 +15,7 @@ from send_email import send_email
 from dotenv import load_dotenv
 import re
 from sqlalchemy import or_
+from sqlalchemy.sql import functions, expression
 
 load_dotenv('.env', verbose=True, override=True)
 
@@ -318,17 +319,24 @@ def private_messages_read(to_user):
 @app.route('/api/userlist/<page>', methods=["GET"])
 @login_required
 def userlist(page):
+    if (isinstance(page, str) and (not page.isdigit() or int(page) < 1)) or (isinstance(page, int) and page < 1):
+        return make_response(
+            jsonify(
+                response=False
+            ),
+            400
+        )
     search_str = ""
     if request.data:
         data = request.json
         if "search" in data:
             search_str = data["search"]
-    list_of_users = User.query.where(or_(
-        User.email.ilike(f"%${search_str}%"),
-        User.username.ilike(f"%${search_str}%"),
-        User.name.ilike(f"%${search_str}%"),
-        User.surname.ilike(f"%${search_str}%")
-    )).paginate(page=page, per_page=30).items
+    list_of_users = User.query.filter(
+        User.email.ilike(f"%{search_str}%") |
+        User.username.ilike(f"%{search_str}%") |
+        User.name.concat(" ").concat(User.surname).ilike(f"%{search_str}%")
+    ).paginate(page=int(page), per_page=30).items
+    print(list_of_users)
     json_of_users = {}
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
