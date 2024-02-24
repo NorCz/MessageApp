@@ -13,6 +13,7 @@ from db import db
 from models import *
 from send_email import send_email
 from dotenv import load_dotenv
+import re
 
 load_dotenv('.env', verbose=True, override=True)
 
@@ -123,6 +124,20 @@ def register():
                     response="Email already exists"
                 ),
                 409
+            )
+        if not re.match("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", data["email"]):
+            return make_response(
+                jsonify(
+                    response="Invalid email address"
+                ),
+                400
+            )
+        if not len(data["password"]) >= 8:
+            return make_response(
+                jsonify(
+                    response="Password too short"
+                ),
+                400
             )
         cipher_data = hash_password(data["password"])
         with app.app_context():
