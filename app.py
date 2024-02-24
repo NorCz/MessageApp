@@ -236,7 +236,7 @@ def private_messages_read(to_user):
             jsonify(
                 logged_user=u_id,
                 to_id=conv.to_user_id,
-                read_till=conv.readTill
+                read_till=int(conv.readTill)
             ), 200
         )
     else:
@@ -255,7 +255,8 @@ def user_read_private_message():
         u_id = int(current_user.get_id())
         conv = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=data["to_user"]).first()
         if conv is not None:
-            conv.readTill = datetime.now()
+            converted_date = str(data["date"])
+            conv.readTill = converted_date
             db.session.commit()
             return make_response(
                 jsonify(
@@ -526,9 +527,13 @@ def change_image():
 def get_image():
     u_id = current_user.get_id()
     user = User.query.filter_by(id=u_id).first()
-    response = make_response(user.image, 200)
-    response.mimetype = "text/plain"
-    return response
+    return make_response(
+        jsonify(
+            response="true",
+            image=user.image
+        ),
+        200
+    )
 
 
 # Chaty

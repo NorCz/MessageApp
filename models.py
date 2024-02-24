@@ -71,7 +71,7 @@ class PrivateMessagesRead(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     from_user_id = db.Column(db.Integer, unique=False, nullable=False)
     to_user_id = db.Column(db.Integer, unique=False, nullable=False)
-    readTill = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
+    readTill = db.Column(db.String, unique=False, nullable=False)
 
 
 class RestoreCodes(db.Model):
