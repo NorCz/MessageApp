@@ -14,6 +14,7 @@ from models import *
 from send_email import send_email
 from dotenv import load_dotenv
 import re
+from sqlalchemy import or_
 
 load_dotenv('.env', verbose=True, override=True)
 
@@ -316,8 +317,18 @@ def private_messages_read(to_user):
 @app.route('/api/userlist', methods=["GET"], defaults={'page': 1})
 @app.route('/api/userlist/<page>', methods=["GET"])
 @login_required
-def userlist(page=1):
-    list_of_users = User.query.paginate(page=page, per_page=30).items
+def userlist(page):
+    search_str = ""
+    if request.data:
+        data = request.json
+        if "search" in data:
+            search_str = data["search"]
+    list_of_users = User.query.where(or_(
+        User.email.ilike(f"%${search_str}%"),
+        User.username.ilike(f"%${search_str}%"),
+        User.name.ilike(f"%${search_str}%"),
+        User.surname.ilike(f"%${search_str}%")
+    )).paginate(page=page, per_page=30).items
     json_of_users = {}
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
