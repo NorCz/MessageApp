@@ -291,7 +291,7 @@ def private_messages_read(to_user):
                 with app.app_context():
                     converted_date = str(data["date"])
                     print('Conv found')
-                    db.session.query(PrivateMessagesRead).filter_by(id=conv.id).update({'readTill:': converted_date})
+                    db.session.query(PrivateMessagesRead).filter_by(id=conv.id).update({'readTill': converted_date})
                     db.session.commit()
                     return make_response(
                         jsonify(
