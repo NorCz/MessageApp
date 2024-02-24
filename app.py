@@ -13,6 +13,7 @@ from db import db
 from models import *
 from send_email import send_email
 from dotenv import load_dotenv
+import re
 
 load_dotenv('.env', verbose=True, override=True)
 
@@ -107,6 +108,34 @@ def register():
             return make_response(
                 jsonify(
                     response="Request body missing at least one of: username, name, surname, email"
+                ),
+                400
+            )
+        if User.query.filter_by(username=data["username"]).first() is not None:
+            return make_response(
+                jsonify(
+                    response="Username already exists"
+                ),
+                409
+            )
+        if User.query.filter_by(email=data["email"]).first() is not None:
+            return make_response(
+                jsonify(
+                    response="Email already exists"
+                ),
+                409
+            )
+        if not re.match("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", data["email"]):
+            return make_response(
+                jsonify(
+                    response="Invalid email address"
+                ),
+                400
+            )
+        if not len(data["password"]) >= 8:
+            return make_response(
+                jsonify(
+                    response="Password too short"
                 ),
                 400
             )

@@ -22,7 +22,10 @@ Jeśli ustawiasz w pliku `.env` inny adres serwera niż `127.0.0.1`, powinieneś
 ```bash
 docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
-Serwer Frontend jest teraz dostępny pod adresem `https://[server_address]:[server_port]` (default/prebuilt: `https://127.0.0.1:3000`).
+Serwer Frontend jest teraz dostępny pod adresem `https://[server_address]:[server_port]` (default/prebuilt: `https://127.0.0.1:3000`). Serwer Backend dostępny jest przez proxy pod tym samym adresem na ścieżkach `/api/`.
+
+> [!WARNING]
+> Wszystkie adresy wypisywane przez kontener Docker są dla niego wewnętrzne i niedostępne z zewnątrz bez przekierowania. Te informacje są wypisywane w celach debugowania, a sam serwer wystawiony jest na zewnątrz tak jak zostało to opisane powyżej w dokumentacji.
 
 ## Budowa manualna
 
@@ -82,7 +85,10 @@ If you're using a different server address from `127.0.0.1` in the `.env` file, 
 ```bash
 docker run -dp [server_address]:[server_port]:[server_port] --env-file .env messageapp
 ```
-The Frontend server is now available at `https://[server_address]:[server_port]` (default/prebuilt: `https://127.0.0.1:3000`).
+The Frontend server is now available at `https://[server_address]:[server_port]` (default/prebuilt: `https://127.0.0.1:3000`). The Backend server is available at the same address through proxy on `/api/` endpoints.
+
+> [!WARNING]
+> All addresses printed by the Docker container are internal to its network and unreachable from outside without explicit forwarding. These messages are meant for debugging purposes, the server address is still as configured by the user and explained in this documentation.
 
 ## Manual building
 
