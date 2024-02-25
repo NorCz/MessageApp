@@ -13,6 +13,8 @@ Serwer Frontend działa w technologii [React](https://react.dev/), jest budowany
 
 Baza danych wykorzystuje silnik [SQLite3](https://www.sqlite.org/). Baza danych wraz z kopiami bezpieczeństwa umieszczona jest na woluminie Docker, którym administrator systemu może prosto zarządzać bez ingerowania w sam kontener z bazą danych. Wolumin nie jest czyszczony między uruchomieniami kontenera oraz jest od niego niezależny, dzięki czemu możliwe jest proste aktualizowanie systemu komunikacji poprzez pobranie lub zbudowanie nowego obrazku i połączenie go z tym samym woluminem.
 
+Kopie bezpieczeństwa wykonywane są w folderze `backups` na woluminie. Odtworzenie kopii zapasowej jest proste i polega na zatrzymaniu serwera poprzez interfejs uWSGI, a następnie zastąpieniu pliku bazy danych `project.db` wybranym plikiem kopii zapasowej.
+
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
 ### Wymagania
@@ -60,6 +62,8 @@ password=[Hasło konta pocztowego usługi odzyskiwania haseł]
 smtp_server=[Adres serwera pocztowego usługi odzyskiwania haseł]
 smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
 uwsgi_worker_count=[Ilość wątków/procesów wykorzystywana przez serwer Backend]
+cron_backup_hour=[Godzina, o której wykonywany jest skrypt do zarządzania backupami]
+cron_backup_count=[Ilość backupów do przechowywania]
 ```
 ### Proces budowy
 Sklonuj lub pobierz to repozytorium.
@@ -85,6 +89,8 @@ Prebuilt images can also be downloaded from the [Releases](https://github.com/No
 The Frontend server is based on the [React](https://react.dev/) framework, uses react-scripts for building, and is served with [local-web-server](https://github.com/lwsjs/local-web-server). The Backend server is based on the [Flask](https://flask.palletsprojects.com/en/) framework, uses the [SQLAlchemy](https://www.sqlalchemy.org/) engine for managing a database connection, and is run through [uWSGI](https://github.com/unbit/uwsgi). All the server processes are run as the `nobody` user for safety.
 
 The database runs on the [SQLite3](https://www.sqlite.org/) engine. Both the database itself and its backup copies are located on a Docker volume, which can be easily managed by the system administrator without interfering with the communication system. The volume is not cleared between container runs and is separate from it, which makes updating the system easy, requiring simply downloading or building a new version of the image and connecting it with the same volume. 
+
+Backups are created in the `backups` folder within the volume. Restoring from a backup is trivial. You should first stop the server through the uWSGI interface and then replace the `project.db` database file with your chosen backup file.
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
@@ -132,6 +138,8 @@ password=[Your password recovery email password]
 smtp_server=[Your password recovery email server address]
 smtp_port=[Your password recovery email server SMTP port]
 uwsgi_worker_count=[Worker/process count used by the Backend server]
+cron_backup_hour=[Hour of the day when the backup script is run]
+cron_backup_count=[Number of backups to preserve]
 ```
 
 ### Build process
