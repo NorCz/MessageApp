@@ -1,3 +1,8 @@
+Ten projekt został wykonany przez zespół "Algorytmiczni Dijkstrowicze" na [Ogólnopolskie Zawody Techniczne PRIMUS INTER PARES](https://zt.zsl.gda.pl/) organizowane przez Zespół Szkół Łączności
+Im. Obrońców Poczty Polskiej w Gdańsku.
+
+---
+
 # [PL] MessageApp - serwer Backend
 W procesie budowania Backend pakuje serwer Frontend i wystawia go na komunikację oraz wykorzystuje prosty mechanizm proxy, aby operować oboma serwerami na tym samym źródle. Komunikacja zewnętrzna i wewnętrzna z obu serwerów jest szyfrowana podanym certyfikatem.
 

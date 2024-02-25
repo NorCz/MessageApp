@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     image = db.Column(db.String, unique=False, nullable=True, default=None)
     lastRequest = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.now)
+    theme = db.Column(db.String, unique=False, nullable=False, default="standard")
 
 
 class ChatMember(db.Model):
@@ -64,7 +65,7 @@ class PrivateMessage(db.Model):
     content = db.Column(db.String, unique=False, nullable=True)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False, default=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
-    attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
+    attachment = db.Column(db.String, unique=False, nullable=True)
 
 
 class PrivateMessagesRead(db.Model):

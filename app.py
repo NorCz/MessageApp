@@ -547,17 +547,20 @@ def manage():
     response = ""
     if "name" in data:
         user.name = data["name"]
-        response += f"Successfully changed name to {user.name}. "
+        response += f"Successfully changed name to {user.name}."
     if "surname" in data:
         user.surname = data["surname"]
-        response += f"Successfully changed surname to {user.surname}. "
+        response += f"Successfully changed surname to {user.surname}."
     if "email" in data:
         existing_user = User.query.filter_by(email=data["email"]).first()
         if existing_user:
             response += "Email has been already taken."
         else:
             user.email = data["email"]
-            response += f"Successfully changed email to {user.email}. "
+            response += f"Successfully changed email to {user.email}."
+    if "theme" in data:
+        user.theme = data["theme"]
+        response += f"Successfully changed theme to {user.theme}."
     db.session.commit()
     return jsonify(
         response=response
