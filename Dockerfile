@@ -34,6 +34,10 @@ RUN mkdir /instance
 RUN chown nobody:nogroup /instance
 RUN ln -sf /instance /app/backend/instance
 
-USER nobody:nogroup
+# Setup cron
+RUN echo '#!/bin/sh\nexit 0' > /usr/sbin/policy-rc.d
+RUN apt-get install -y cron
+RUN service cron start
+
 EXPOSE $server_port
 CMD ["bash", "./docker_cmd_wrapper.sh"]
