@@ -6,7 +6,7 @@ source /app/frontend/src/.env
 #Run backup
 python3 /app/backend/backup_manager.py $cron_backup_count
 service cron start
-echo "$cron_backup_minute $cron_backup_hour * * * /usr/bin/python3 /app/backend/backup_manager.py $cron_backup_count" | crontab -
+echo "$cron_backup_minute $cron_backup_hour * * * /usr/bin/python3 /app/backend/backup_manager.py $cron_backup_count > /proc/1/fd/1 2>&1" | crontab -
 
 cd /app/frontend
 su nobody -s /bin/bash -c 'ws \
