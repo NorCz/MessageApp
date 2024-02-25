@@ -15,6 +15,8 @@ Baza danych wykorzystuje silnik [SQLite3](https://www.sqlite.org/). Baza danych 
 
 Kopie bezpieczeństwa wykonywane są w folderze `backups` na woluminie. Odtworzenie kopii zapasowej jest proste i polega na zatrzymaniu serwera poprzez interfejs uWSGI, a następnie zastąpieniu pliku bazy danych `project.db` wybranym plikiem kopii zapasowej.
 
+Kopia bezpieczeństwa jest tworzona automatycznie przy uruchomieniu serwera, jeżeli istnieje już plik `project.db`. Dodatkowo kopia tworzona jest o godzinie i minucie ustawionej w zmiennych środowiskowych `cron_backup_hour` oraz `cron_backup_minute`. Zmienna `cron_backup_count` ustala, ile kopii bezpieczeństwa jest przechowywanych jednocześnie. Kiedy limit zostanie przekroczony, ostatnia kopia zostaje usunięta.
+
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
 ### Wymagania
@@ -91,6 +93,8 @@ The Frontend server is based on the [React](https://react.dev/) framework, uses 
 The database runs on the [SQLite3](https://www.sqlite.org/) engine. Both the database itself and its backup copies are located on a Docker volume, which can be easily managed by the system administrator without interfering with the communication system. The volume is not cleared between container runs and is separate from it, which makes updating the system easy, requiring simply downloading or building a new version of the image and connecting it with the same volume. 
 
 Backups are created in the `backups` folder within the volume. Restoring from a backup is trivial. You should first stop the server through the uWSGI interface and then replace the `project.db` database file with your chosen backup file.
+
+A backup is automatically created upon running the server, if a `project.db` file is already present. Additionally, backups are created automatically once a day at the hour and minute set in the `cron_backup_hour` and `cron_backup_minute` environment variable. The `cron_backup_count` variable controls how many backups are preserved. Once the limit is exceeded, the oldest backup is deleted.
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
