@@ -5,7 +5,7 @@ FROM ubuntu:22.04
 # Initialise Ubuntu
 WORKDIR /
 COPY requirements.txt .
-RUN apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get -y install python3.11 pip curl libpcre3 libpcre3-dev libssl-dev tzdata
+RUN apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get -y install python3.11 pip curl libpcre3 libpcre3-dev libssl-dev tzdata ldap-utils
 RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && apt-get install -y nodejs
 
 RUN cp -p /usr/share/zoneinfo/Europe/Warsaw /etc/localtime

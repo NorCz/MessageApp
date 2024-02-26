@@ -19,6 +19,8 @@ Kopia bezpieczeństwa jest tworzona automatycznie przy uruchomieniu serwera, je�
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
+Serwer wysyła zapytania do skonfigurowanego serwera Active Directory w celu utworzenia użytkowników. Użytkownicy są tworzeni w komunikatorze przy uruchomieniu serwera (jeżeli istnieje już plik bazy danych), a nowo utworzeni użytkownicy dodawani są co 15 minut. Serwer wykorzystuje do tego protokół LDAP, wysyłając zapytania na `ldap://[ad_server_dn]`. Ta nazwa DNS musi być dostępna w sieci, w której umieszczony jest kontener Docker, aby umożliwić komunikację z kontrolerem domeny. Aby ta usługa działała, należy podać nazwę domeny (`ad_server_dn`), Common Name grupy, z której czytani są użytkownicy (`ad_group_cn`), oraz dane logowania użytkownika, jako który będą wykonywane zapytania LDAP (`ad_username` oraz `ad_password`)
+
 ### Wymagania
 * [Docker](https://www.docker.com/products/docker-desktop/) lub inne oprogramowanie czy usługa zdolna do uruchamiania kontenerów Docker.
 
@@ -59,14 +61,18 @@ W środowisku firmowym zaleca się wykorzystać własny certyfikat w celu szyfro
 server_address=[Adress wykorzystywany przez serwer Frontend]
 server_port=[Port wykorzystywany przez serwer Frontend]
 secret_key=[Klucz szyfrowania wykorzystywany przez serwer Flask]
-sender_email=[Konto pocztowe usługi odzyskiwania haseł]
-password=[Hasło konta pocztowego usługi odzyskiwania haseł]
+sender_email=[Konto pocztowe usługi zarządzania użytkownikami]
+password=[Hasło konta pocztowego usługi zarządzania użytkownikami]
 smtp_server=[Adres serwera pocztowego usługi odzyskiwania haseł]
 smtp_port=[Port SMTP serwera pocztowego usługi odzyskiwania haseł]
 uwsgi_worker_count=[Ilość wątków/procesów wykorzystywana przez serwer Backend]
 cron_backup_hour=[Godzina, o której wykonywany jest skrypt do zarządzania backupami (strefa czasowa Europe/Warsaw)]
 cron_backup_minute=[Minuta godziny, o której wykonywany jest skrypt do zarządzania backupami]
 cron_backup_count=[Ilość backupów do przechowywania]
+ad_server_dn=[Nazwa domeny, np. messageapp.local]
+ad_group_cn=[Common Name grupy, w której są użytkownicy którym należy stworzyć konta]
+ad_username=[Nazwa użytkownika do logowania w AD, dla użytkownika, który wykonuje zapytania do domeny]
+ad_password=[Hasło do logowania w AD, dla użytkownika, który wykonuje zapytania do domeny]
 ```
 ### Proces budowy
 Sklonuj lub pobierz to repozytorium.
@@ -98,6 +104,9 @@ Backups are created in the `backups` folder within the volume. Restoring from a 
 A backup is automatically created upon running the server, if a `project.db` file is already present. Additionally, backups are created automatically once a day at the hour and minute set in the `cron_backup_hour` and `cron_backup_minute` environment variable. The `cron_backup_count` variable controls how many backups are preserved. Once the limit is exceeded, the oldest backup is deleted.
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
+
+The server sends requests to the configured Active Directory server in order to create users in the messaging system. Users are created when the server is run (if the database file is already present), and new users are added every 15 minutes. The server makes use of the LDAP protocol for this purpose, sending requests to `ldap://[ad_server_dn]`. That DNS name must be reachable in the network where the Docker container is deployed in order to allow communication with the domain controller. For this service to work, you must provide the domain name, (`ad_server_dn`), the common name of the group from which users are fetched (`ad_group_cn`), and the login information of the user as which the service is supposed to execute LDAP queries (`ad_username` and `ad_password`).
+
 
 ### Requirements
 * [Docker](https://www.docker.com/products/docker-desktop/), or other software or service capable of running Docker containers.
@@ -139,13 +148,17 @@ server_address=[Address used by the Frontend server]
 server_port=[Port used by the Frontend server]
 secret_key=[Encryption key used by the Flask server]
 sender_email=[Your password recovery email account]
-password=[Your password recovery email password]
-smtp_server=[Your password recovery email server address]
+password=[Your user management email address]
+smtp_server=[Your user management email server address]
 smtp_port=[Your password recovery email server SMTP port]
 uwsgi_worker_count=[Worker/process count used by the Backend server]
 cron_backup_hour=[Hour of the day when the backup script is run (Europe/Warsaw)]
 cron_backup_minute=[Minute of the hour when the backup script is run]
 cron_backup_count=[Number of backups to preserve]
+ad_server_dn=[Domain name, e.g. messageapp.local]
+ad_group_cn=[Common Name of group with users to be created]
+ad_username=[AD login username for the user to perform LDAP rqeuests]
+ad_password=[AD login password for the user to perform LDAP rqeuests]
 ```
 
 ### Build process

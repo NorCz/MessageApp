@@ -54,6 +54,10 @@ def handle_options(response):
     response.headers["Access-Control-Allow-Credentials"] = "True"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
+    if current_user is not None and current_user.is_authenticated():
+        with app.app_context():
+            db.session.get(User, current_user.id).lastUpdated = datetime.now()
+            db.session.commit()
     return response
 
 
@@ -318,8 +322,8 @@ def private_messages_read(to_user):
             )
 
 
-@app.route('/api/userlist', methods=["GET"], defaults={'page': 1})
-@app.route('/api/userlist/<page>', methods=["GET"])
+@app.route('/api/userlist', methods=["GET", "POST"], defaults={'page': 1})
+@app.route('/api/userlist/<page>', methods=["GET", "POST"])
 @login_required
 def userlist(page):
     if (isinstance(page, str) and (not page.isdigit() or int(page) < 1)) or (isinstance(page, int) and page < 1):
@@ -338,7 +342,7 @@ def userlist(page):
         User.email.ilike(f"%{search_str}%") |
         User.username.ilike(f"%{search_str}%") |
         User.name.concat(" ").concat(User.surname).ilike(f"%{search_str}%")
-    ).paginate(page=int(page), per_page=30).items
+    ).filter(User.id != current_user.id).paginate(page=int(page), per_page=30).items
     json_of_users = {}
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
