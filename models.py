@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from sqlalchemy import ForeignKey
 from db import db
 from datetime import datetime
+import time
 
 
 class User(db.Model, UserMixin):
@@ -28,7 +29,7 @@ class ChatMember(db.Model):
     nickname = db.Column(db.String, unique=False, nullable=True, default=None)
     isAdmin = db.Column(db.Boolean, unique=False, nullable=False)
     isRemoved = db.Column(db.Boolean, unique=False, nullable=False, default=False)
-    readtill = db.Column(db.DateTime, unique=False, nullable=True, default=datetime.now)
+    readtill = db.Column(db.DateTime, unique=False, nullable=True, default=time.time)
 
     groupchat = db.relationship('GroupChat')
     user = db.relationship('User')

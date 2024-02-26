@@ -797,10 +797,16 @@ def send_group_message(chat_id):
 def get_chat_member(chat_id):
     u_id = current_user.get_id()
     member = ChatMember.query.filter((ChatMember.groupchat_id == chat_id) & (ChatMember.user_id == u_id)).first()
-    return jsonify(
-        user_id=member.user_id,
-        readtill=member.readtill
-    )
+    if member is not None:
+        return jsonify(
+            user_id=member.user_id,
+            readtill=member.readtill
+        )
+    else:
+        return make_response(jsonify(
+            response=False
+        ), 404)
+
 
 
 @app.route('/api/chats/<chat_id>/<page>', methods=["GET"])
