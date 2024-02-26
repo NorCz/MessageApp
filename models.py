@@ -37,7 +37,7 @@ class ChatMember(db.Model):
 class GroupChat(db.Model):
     __tablename__ = 'groupchat'
 
-    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String, unique=False, nullable=False)
 
 
