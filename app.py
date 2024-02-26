@@ -631,23 +631,18 @@ def create_chat():
         if 'name' in data:
             chat_name = data["name"]
 
-    with app.app_context():
-        chat = GroupChat(
-            name=chat_name
-        )
-
-        db.session.add(chat)
-        db.session.flush()
-        db.session.refresh(chat)
-
-        member = ChatMember(
-            user_id=current_user.id,
-            groupchat_id=chat.id,
-            isAdmin=True
-        )
-
-        db.session.add(member)
-        db.session.commit()
+    chat = GroupChat(
+        name=chat_name
+    )
+    db.session.add(chat)
+    db.session.commit()
+    member = ChatMember(
+        user_id=current_user.id,
+        groupchat_id=chat.id,
+        isAdmin=True
+    )
+    db.session.add(member)
+    db.session.commit()
 
     return jsonify(
         {
