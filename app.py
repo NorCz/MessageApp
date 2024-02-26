@@ -328,8 +328,8 @@ def private_messages_read(to_user):
             )
 
 
-@app.route('/api/userlist', methods=["GET"], defaults={'page': 1})
-@app.route('/api/userlist/<page>', methods=["GET"])
+@app.route('/api/userlist', methods=["GET", "POST"], defaults={'page': 1})
+@app.route('/api/userlist/<page>', methods=["GET", "POST"])
 @login_required
 def userlist(page):
     if (isinstance(page, str) and (not page.isdigit() or int(page) < 1)) or (isinstance(page, int) and page < 1):
