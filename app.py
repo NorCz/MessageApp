@@ -257,6 +257,16 @@ def get_user(user_id):
     )
 
 
+@app.route('/api/get_image_of_user/<user_id>', methods=["GET"])
+@login_required
+def get_image_of_user(user_id):
+    u = User.query.filter_by(id=user_id).first()
+    return jsonify(
+        id=u.id,
+        image=u.image
+    )
+
+
 @app.route('/api/private_messages/read_till/<to_user>', methods=["GET", "POST"])
 @login_required
 def private_messages_read(to_user):
