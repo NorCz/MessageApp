@@ -1,3 +1,4 @@
+import asyncio
 import os
 import secrets
 import string
@@ -195,6 +196,6 @@ for cn in decoded_members:
         session.add(user)
         session.commit()
     imported_count += 1
-    send_generic_email(user_dict['mail'], f"Subject: MessageApp - AD Account imported successfully\nHi there, your Active Directory account has been imported into the MessageApp communication system.\nYour generated password is {generated_password}, please change it upon login.")
+    asyncio.run(send_generic_email(user_dict['mail'], "Subject: MessageApp - AD Account imported successfully", f"Hi there, your Active Directory account has been imported into the MessageApp communication system.\nYour generated password is {generated_password}, please change it upon login."))
 
 print(f"[LDAP] Imported {imported_count} users, exiting.")
