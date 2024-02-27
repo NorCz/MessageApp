@@ -10,14 +10,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && apt-get install
 
 RUN cp -p /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
 
-# Initialise Python Backend
-RUN pip install -r requirements.txt
-RUN pip install uwsgi -I --no-cache-dir
-COPY --chown=nobody:nogroup /.env /app/backend/
-COPY --chown=nobody:nogroup *.py /app/backend/
-COPY --chown=nobody:nogroup /certs/messageapp.crt /app/backend
-COPY --chown=nobody:nogroup /certs/messageapp.key /app/backend
-
 # Initialise React Frontend
 COPY --chown=nobody:nogroup /frontend /app/frontend
 COPY --chown=nobody:nogroup .env /app/frontend/src
@@ -26,6 +18,17 @@ WORKDIR /app/frontend
 RUN npm i
 RUN npm i -g local-web-server
 RUN npm run build
+
+
+# Initialise Python Backend
+WORKDIR /
+RUN pip install -r requirements.txt
+RUN pip install uwsgi -I --no-cache-dir
+COPY --chown=nobody:nogroup /.env /app/backend/
+COPY --chown=nobody:nogroup *.py /app/backend/
+COPY --chown=nobody:nogroup /default_avatar.txt /app/backend
+COPY --chown=nobody:nogroup /certs/messageapp.crt /app/backend
+COPY --chown=nobody:nogroup /certs/messageapp.key /app/backend
 
 # Run wrapper script
 WORKDIR /

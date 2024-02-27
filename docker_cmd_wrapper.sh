@@ -2,8 +2,8 @@
 set -m
 set -f
 source /app/frontend/src/.env
-
 service cron start
+ulimit -s 65535
 
 # Run backup helper
 if [[ -v cron_backup_hour && -v cron_backup_minute && -v cron_backup_count ]]; then
