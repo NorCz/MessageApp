@@ -877,6 +877,24 @@ def get_chat_member(chat_id):
         ), 404)
 
 
+@app.route("/api/chat/get_chat_member/<chat_id>/<user_id>", methods=["GET"])
+def get_mem(chat_id, user_id):
+    member = ChatMember.query.filter((ChatMember.groupchat_id == chat_id) & (ChatMember.user_id == user_id)).first()
+    if member is not None:
+        return jsonify(
+            id=member.id,
+            user_id=member.user_id,
+            readtill=member.readtill,
+            isAdmin=member.isAdmin,
+            isRemove=member.isRemoved,
+            groupchat_id=member.groupchat_id
+        )
+    else:
+        return make_response(jsonify(
+            response=False
+        ), 404)
+
+
 @app.route('/api/chats/<chat_id>/<page>', methods=["GET"])
 @login_required
 def get_group_messages(chat_id, page):
