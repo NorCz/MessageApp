@@ -8,7 +8,6 @@ ulimit -s 65535
 # Run backup helper
 if [[ -v cron_backup_hour && -v cron_backup_minute && -v cron_backup_count ]]; then
   python3 -c "print('Found variables for backup: ${cron_backup_hour//$'\r'/} (cron_backup_hour), ${cron_backup_minute//$'\r'/} (cron_backup_minute), ${cron_backup_count//$'\r'/} (cron_backup_count).')"
-  python3 /app/backend/backup_manager.py $cron_backup_count
   python3 -c "print('Starting backup service.')"
   echo "$cron_backup_minute $cron_backup_hour * * * /usr/bin/python3 /app/backend/backup_manager.py $cron_backup_count > /proc/1/fd/1 2>&1" | crontab -
 else
