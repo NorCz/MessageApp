@@ -353,7 +353,7 @@ def userlist(page):
     if request.data:
         data = request.json
         if "exc_list" in data:
-            t = eval(json.dumps(data["exc_list"])) #niebezpieczne
+            t = json.loads(json.dumps(data["exc_list"])) #niebezpieczne
             for i in t:
                 if i.isdigit():
                     exclusion_list.append(int(i))
