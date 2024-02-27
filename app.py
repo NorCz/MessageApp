@@ -349,12 +349,11 @@ def userlist(page):
         if "search" in data:
             search_str = data["search"]
     t = []
+    exclusion_list = []
     if request.data:
         data = request.json
         if "exc_list" in data:
-            t = json.loads(json.dumps(data["exc_list"]))
-            t = list(t)
-            exclusion_list = []
+            t = eval(json.dumps(data["exc_list"])) #niebezpieczne
             for i in t:
                 if i.isdigit():
                     exclusion_list.append(int(i))
@@ -365,7 +364,7 @@ def userlist(page):
     ).filter(User.id != current_user.id).paginate(page=int(page), per_page=30).items
     json_of_users = {}
     for i in range(len(list_of_users)):
-        if list_of_users[i] not in exclusion_list:
+        if list_of_users[i].id not in exclusion_list:
             json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
                                                "name": list_of_users[i].name, "surname": list_of_users[i].surname,
                                                "email": list_of_users[i].email}})
