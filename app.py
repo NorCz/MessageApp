@@ -54,7 +54,7 @@ def handle_options(response):
     response.headers["Access-Control-Allow-Credentials"] = "True"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
-    if current_user is not None and current_user.is_authenticated():
+    if current_user is not None and current_user.is_authenticated:
         with app.app_context():
             db.session.get(User, current_user.id).lastUpdated = datetime.now()
             db.session.commit()

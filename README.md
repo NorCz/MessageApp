@@ -19,7 +19,9 @@ Kopia bezpieczeństwa jest tworzona automatycznie przy uruchomieniu serwera, je�
 
 Dokumentacja API jest dostępna w języku angielskim pod zakładką [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation).
 
-Serwer wysyła zapytania do skonfigurowanego serwera Active Directory w celu utworzenia użytkowników. Użytkownicy są tworzeni w komunikatorze przy uruchomieniu serwera (jeżeli istnieje już plik bazy danych), a nowo utworzeni użytkownicy dodawani są co 15 minut. Serwer wykorzystuje do tego protokół LDAP, wysyłając zapytania na `ldap://[ad_server_dn]`. Ta nazwa DNS musi być dostępna w sieci, w której umieszczony jest kontener Docker, aby umożliwić komunikację z kontrolerem domeny. Aby ta usługa działała, należy podać nazwę domeny (`ad_server_dn`), Common Name grupy, z której czytani są użytkownicy (`ad_group_cn`), oraz dane logowania użytkownika, jako który będą wykonywane zapytania LDAP (`ad_username` oraz `ad_password`)
+Serwer wysyła zapytania do skonfigurowanego serwera Active Directory w celu utworzenia użytkowników. Użytkownicy są tworzeni w komunikatorze przy uruchomieniu serwera (jeżeli istnieje już plik bazy danych), a nowo utworzeni użytkownicy dodawani są co 15 minut. Serwer wykorzystuje do tego protokół LDAP, wysyłając zapytania na `ldap://[ad_server_dn]`. Ta nazwa DNS musi być dostępna w sieci, w której umieszczony jest kontener Docker, aby umożliwić komunikację z kontrolerem domeny. Aby ta usługa działała, należy podać nazwę domeny (`ad_server_dn`), Common Name grupy, z której czytani są użytkownicy (`ad_group_cn`), oraz dane logowania użytkownika, jako który będą wykonywane zapytania LDAP (`ad_username` oraz `ad_password`). Utworzony poprzez AD użytkownik otrzymuje maila z wygenerowanym dla niego hasłem i zaleceniem, aby zmienić je na własne po zalogowaniu.
+
+System testowany był z usługą Active Directory systemu Windows Server 2019.
 
 ### Wymagania
 * [Docker](https://www.docker.com/products/docker-desktop/) lub inne oprogramowanie czy usługa zdolna do uruchamiania kontenerów Docker.
@@ -105,7 +107,9 @@ A backup is automatically created upon running the server, if a `project.db` fil
 
 API documentation is available under the [Wiki](https://github.com/NorCz/MessageApp/wiki/MessageApp-Backend-API-Documentation) tab.
 
-The server sends requests to the configured Active Directory server in order to create users in the messaging system. Users are created when the server is run (if the database file is already present), and new users are added every 15 minutes. The server makes use of the LDAP protocol for this purpose, sending requests to `ldap://[ad_server_dn]`. That DNS name must be reachable in the network where the Docker container is deployed in order to allow communication with the domain controller. For this service to work, you must provide the domain name, (`ad_server_dn`), the common name of the group from which users are fetched (`ad_group_cn`), and the login information of the user as which the service is supposed to execute LDAP queries (`ad_username` and `ad_password`).
+The server sends requests to the configured Active Directory server in order to create users in the messaging system. Users are created when the server is run (if the database file is already present), and new users are added every 15 minutes. The server makes use of the LDAP protocol for this purpose, sending requests to `ldap://[ad_server_dn]`. That DNS name must be reachable in the network where the Docker container is deployed in order to allow communication with the domain controller. For this service to work, you must provide the domain name, (`ad_server_dn`), the common name of the group from which users are fetched (`ad_group_cn`), and the login information of the user as which the service is supposed to execute LDAP queries (`ad_username` and `ad_password`). A user imported like this receives an email with a generated password and a warning to change it after logging in.
+
+The system was tested with the Active Directory service implemented by Windows Server 2019. 
 
 
 ### Requirements
