@@ -51,7 +51,7 @@ class GroupMessage(db.Model):
     content = db.Column(db.String, unique=False, nullable=False)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False, default=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
-    attachment = db.Column(db.LargeBinary, unique=False, nullable=True)
+    attachment = db.Column(db.String, unique=False, nullable=True)
 
     member = db.relationship('ChatMember')
     groupchat = db.relationship('GroupChat')

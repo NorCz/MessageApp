@@ -404,7 +404,7 @@ def send_message(user_id):
                 400
             )
         params = request.json
-
+        u_id = current_user.get_id()
         if "content" not in params:
             return make_response(
                 jsonify(
@@ -415,7 +415,7 @@ def send_message(user_id):
 
         with app.app_context():
             message = PrivateMessage(
-                from_id=current_user.get_id(),
+                from_id=u_id,
                 to_id=user_id,
                 content=params.get("content"),
             )
@@ -423,6 +423,10 @@ def send_message(user_id):
                 message.attachment = params.get("attachment")
             db.session.add(message)
             db.session.commit()
+        u_id = current_user.get_id()
+        m = PrivateMessagesRead.query.filter_by(from_user_id=u_id).filter_by(to_user_id=user_id).first()
+        m.readTill = int(time.time() * 1000) + 1
+        db.session.commit()
         return jsonify(
             response=True
         )
@@ -823,6 +827,16 @@ def send_group_message(chat_id):
         )
 
 
+@app.route('/api/chats/<chat_id>', methods=["GET"])
+@login_required
+def get_info_about_chat(chat_id):
+    chat = GroupChat.query.filter_by(id=chat_id).first()
+    return jsonify(
+        id=chat.id,
+        name=chat.name
+    )
+
+
 @app.route('/api/chat/<chat_id>')
 @login_required
 def get_chat_member(chat_id):
@@ -837,7 +851,6 @@ def get_chat_member(chat_id):
         return make_response(jsonify(
             response=False
         ), 404)
-
 
 
 @app.route('/api/chats/<chat_id>/<page>', methods=["GET"])
