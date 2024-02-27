@@ -11,7 +11,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && apt-get install
 RUN cp -p /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
 
 # Initialise React Frontend
-COPY --chown=nobody:nogroup /frontend /app/frontend
+COPY --chown=nobody:nogroup /frontend/ /app/frontend/
 COPY --chown=nobody:nogroup .env /app/frontend/src
 
 WORKDIR /app/frontend

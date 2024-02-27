@@ -64,29 +64,36 @@ class PrivateMessage(db.Model):
     __tablename__ = 'privatemessage'
 
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    from_id = db.Column(db.Integer, unique=False, nullable=False)
-    to_id = db.Column(db.Integer, unique=False, nullable=False)
+    from_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
+    to_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
     content = db.Column(db.String, unique=False, nullable=True)
     isDeleted = db.Column(db.Boolean, unique=False, nullable=False, default=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
     attachment = db.Column(db.String, unique=False, nullable=True)
 
+    from_user = db.relationship("User", foreign_keys=[from_id])
+    to_user = db.relationship("User", foreign_keys=[to_id])
 
 class PrivateMessagesRead(db.Model):
     __tablename__ = 'privatemessagesread'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    from_user_id = db.Column(db.Integer, unique=False, nullable=False)
-    to_user_id = db.Column(db.Integer, unique=False, nullable=False)
+    from_user_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
+    to_user_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
     readTill = db.Column(db.String, unique=False, nullable=False)
+
+    from_user = db.relationship("User", foreign_keys=[from_user_id])
+    to_user = db.relationship("User", foreign_keys=[to_user_id])
 
 
 class RestoreCodes(db.Model):
     __tablename__ = 'restorecodes'
 
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    user_id = db.Column(db.Integer, unique=False, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), unique=False, nullable=False)
     code = db.Column(db.String, unique=False, nullable=False)
     timestamp = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now)
     confirmed = db.Column(db.Boolean, unique=False, nullable=False, default=False)
+
+    user = db.relationship("User", foreign_keys=[user_id])
 
 
