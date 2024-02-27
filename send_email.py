@@ -16,9 +16,7 @@ def send_email(destination_email, code):
 async def send_generic_email(destination_email, subject, contents):
     async with sem:
         try:
-            smtp_client = aiosmtplib.SMTP(hostname=os.getenv('smtp_server'), port=int(os.getenv('smtp_port')), tls_context=ssl.create_default_context(), use_tls=True)
-            smtp_server = os.getenv('smtp_server')
-            port = int(os.getenv('smtp_port'))  # 465 for ssl/tls encrypted
+            smtp_client = aiosmtplib.SMTP(hostname=os.getenv('smtp_server'), port=int(os.getenv('smtp_port')), tls_context=ssl.create_default_context(), use_tls=True) # Port 465 for ssl/tls encrypted
             message = EmailMessage()
             message["From"] = os.getenv('sender_email')
             message["To"] = destination_email

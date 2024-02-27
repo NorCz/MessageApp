@@ -272,7 +272,7 @@ for group in groups:
             )
             session.add(user)
             imported_count += 1
-            print(f"[LDAP] Imported user {user_dict['cn']} ({segment_counter}/{len(segments)})")
+            print(f"[LDAP] Imported user {user_dict['sAMAccountName']} ({segment_counter}/{len(segments)})")
             asyncio.run(send_generic_email(user_dict['mail'], "Subject: MessageApp - AD Account imported successfully", f"Hi there, your Active Directory account has been imported into the MessageApp communication system.\nYour generated password is {generated_password}, please change it upon login."))
         session.commit()
     groupi += 1
