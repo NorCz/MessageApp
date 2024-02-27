@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv('/app/backend/.env', verbose=True, override=True)
 
+
 def send_email(destination_email, code):
     asyncio.run(send_generic_email(destination_email, "Hi there", f"Your code is {code}"))
 
