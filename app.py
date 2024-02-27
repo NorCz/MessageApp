@@ -353,7 +353,7 @@ def userlist(page):
     if request.data:
         data = request.json
         if "exc_list" in data:
-            t = json.loads(json.dumps(data["exc_list"])) #niebezpieczne
+            t = eval(json.dumps(data["exc_list"]))
             for i in t:
                 if i.isdigit():
                     exclusion_list.append(int(i))
@@ -616,6 +616,23 @@ def get_image():
         ),
         200
     )
+
+
+@app.route('/api/chats/change_chat_name', methods=["POST"])
+@login_required
+def change_chat_name():
+    if request.json:
+        data = request.json
+        chat_id = data["id"]
+        u_id = current_user.get_id()
+        chat_member = ChatMember.query.filter_by(user_id=u_id).filter_by(groupchat_id=chat_id).first()
+        if chat_member.isAdmin:
+            chat = GroupChat.query.filter_by(id=chat_id).first()
+            chat.name = data["name"]
+        db.session.commit()
+        return make_response(jsonify(response=True), 200)
+    else:
+        return make_response(jsonify(response=False), 409)
 
 
 # Chaty
