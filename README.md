@@ -23,6 +23,9 @@ Serwer wysyła zapytania do skonfigurowanego serwera Active Directory w celu utw
 
 System testowany był z usługą Active Directory systemu Windows Server 2019.
 
+#### Schemat bazy danych
+![Schemat bazy danych](https://i.imgur.com/WbQxCdl.png)
+
 ### Wymagania
 * [Docker](https://www.docker.com/products/docker-desktop/) lub inne oprogramowanie czy usługa zdolna do uruchamiania kontenerów Docker.
 
@@ -111,6 +114,8 @@ The server sends requests to the configured Active Directory server in order to 
 
 The system was tested with the Active Directory service implemented by Windows Server 2019. 
 
+#### Database schema
+![Database schema](https://i.imgur.com/WbQxCdl.png)
 
 ### Requirements
 * [Docker](https://www.docker.com/products/docker-desktop/), or other software or service capable of running Docker containers.
