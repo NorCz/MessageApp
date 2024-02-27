@@ -348,11 +348,13 @@ def userlist(page):
         data = request.json
         if "search" in data:
             search_str = data["search"]
+        if "exc_list" in data:
+            t = json.loads(data["exc_list"])
     list_of_users = User.query.filter(
         User.email.ilike(f"%{search_str}%") |
         User.username.ilike(f"%{search_str}%") |
         User.name.concat(" ").concat(User.surname).ilike(f"%{search_str}%")
-    ).filter(User.id != current_user.id).paginate(page=int(page), per_page=30).items
+    ).filter((User.id != current_user.id) & (User.id not in t)).paginate(page=int(page), per_page=30).items
     json_of_users = {}
     for i in range(len(list_of_users)):
         json_of_users.update({f"User{i}": {"id": list_of_users[i].id, "username": list_of_users[i].username,
