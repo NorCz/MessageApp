@@ -827,14 +827,14 @@ def send_group_message(chat_id):
         )
 
 
-@app.route('/api/chats/<chat_id>', methods=["GET"])
+@app.route('/api/chats', methods=["GET"])
 @login_required
 def get_info_about_chat(chat_id):
-    chat = GroupChat.query.filter_by(id=chat_id).first()
-    return jsonify(
-        id=chat.id,
-        name=chat.name
-    )
+    chat = GroupChat.query.all()
+    json_of_users = {}
+    for i in chat:
+        json_of_users.update({"id": i.id, "name": i.name})
+    return json.dumps(json_of_users)
 
 
 @app.route('/api/group_chats/read_till/<chat_id>', methods=["POST"])
