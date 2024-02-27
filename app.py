@@ -837,6 +837,30 @@ def get_info_about_chat(chat_id):
     )
 
 
+@app.route('/api/group_chats/read_till/<chat_id>', methods=["POST"])
+@login_required
+def gr_read_till(chat_id):
+    if request.json:
+        data = request.json
+        if "date" in data:
+            u_id = current_user.get_id()
+            chat_member = ChatMember.query.filter_by(user_id=u_id).filter_by(groupchat_id=chat_id).first()
+            chat_member.readtill = data["date"]
+            db.session.commit()
+            return make_response(jsonify(response=True), 200)
+        else:
+            return make_response(
+                jsonify(
+                    response=False
+                ), 404
+            )
+    return make_response(
+        jsonify(
+            response=False
+        ), 404
+    )
+
+
 @app.route('/api/chat/<chat_id>')
 @login_required
 def get_chat_member(chat_id):
